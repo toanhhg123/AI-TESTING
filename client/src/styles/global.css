@@ -64,8 +64,7 @@ img {
   backdrop-filter: blur(12px);
 }
 
-.header-inner,
-.footer-inner {
+.header-inner {
   min-height: 72px;
   display: flex;
   align-items: center;
@@ -103,6 +102,69 @@ img {
   gap: 8px;
 }
 
+.account-menu {
+  position: relative;
+}
+
+.account-trigger {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.account-trigger svg:last-child {
+  color: var(--muted);
+}
+
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 230px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 18px 40px rgba(21, 33, 47, 0.12);
+}
+
+.account-dropdown a,
+.account-dropdown button,
+.mobile-nav a,
+.mobile-nav button {
+  min-height: 42px;
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.account-dropdown a:hover,
+.account-dropdown a.active,
+.account-dropdown button:hover,
+.mobile-nav a:hover,
+.mobile-nav a.active,
+.mobile-nav button:hover {
+  background: var(--soft);
+  color: var(--accent-dark);
+}
+
 .icon-button {
   width: 40px;
   height: 40px;
@@ -124,6 +186,25 @@ img {
 
 .mobile-menu {
   display: none;
+}
+
+.mobile-nav-panel {
+  display: none;
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.97);
+}
+
+.mobile-nav {
+  padding-top: 10px;
+  padding-bottom: 14px;
+  display: grid;
+  gap: 4px;
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--border);
 }
 
 .hero {
@@ -214,6 +295,11 @@ h3 {
 .button.primary {
   background: var(--accent);
   color: #ffffff;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .button.secondary {
@@ -442,13 +528,110 @@ select {
   gap: 16px;
 }
 
+.form-message {
+  margin: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+.form-message.error {
+  background: #fff1f0;
+  color: var(--danger);
+}
+
+.auth-hint,
+.auth-switch {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.auth-hint strong {
+  color: var(--ink);
+}
+
+.auth-switch a {
+  color: var(--accent-dark);
+  font-weight: 800;
+}
+
 .site-footer {
+  margin-top: 40px;
   border-top: 1px solid var(--border);
-  background: #ffffff;
+  background: #101820;
+  color: #ffffff;
 }
 
 .site-footer p {
   margin: 0;
+}
+
+.footer-grid {
+  padding: 44px 0 30px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1.7fr) repeat(3, minmax(150px, 1fr));
+  gap: 32px;
+}
+
+.footer-brand .brand {
+  margin-bottom: 16px;
+}
+
+.footer-brand .brand svg {
+  color: #79e0d1;
+}
+
+.footer-brand p,
+.footer-column a,
+.footer-column p,
+.footer-bottom {
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.7;
+}
+
+.footer-brand p {
+  max-width: 390px;
+}
+
+.footer-column {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.footer-column h3 {
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.footer-column a {
+  width: fit-content;
+}
+
+.footer-column a:hover {
+  color: #79e0d1;
+}
+
+.contact-column p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-column svg {
+  flex: 0 0 auto;
+  color: #79e0d1;
+}
+
+.footer-bottom {
+  min-height: 58px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 0.92rem;
 }
 
 .admin-shell {
@@ -524,13 +707,22 @@ select {
     display: none;
   }
 
+  .desktop-actions {
+    display: none;
+  }
+
   .mobile-menu {
     display: inline-flex;
   }
 
+  .mobile-nav-panel {
+    display: block;
+  }
+
   .feature-grid,
   .product-grid,
-  .stat-grid {
+  .stat-grid,
+  .footer-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -571,8 +763,15 @@ select {
 
   .feature-grid,
   .product-grid,
-  .stat-grid {
+  .stat-grid,
+  .footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .footer-bottom {
+    align-items: start;
+    flex-direction: column;
+    padding: 16px 0;
   }
 
   .section-heading.inline {

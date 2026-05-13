@@ -51,6 +51,32 @@ Health check:
 GET /api/health
 ```
 
+## Tài khoản demo
+
+Seed tài khoản mẫu:
+
+```bash
+npm run seed:users
+```
+
+Tài khoản khách hàng:
+
+```text
+customer@example.com / 123456
+```
+
+Tài khoản admin:
+
+```text
+admin@example.com / 123456
+```
+
+API đăng nhập:
+
+```text
+POST /api/auth/login
+```
+
 ## Chạy frontend
 
 ```bash
