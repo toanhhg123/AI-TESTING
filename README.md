@@ -522,6 +522,311 @@ ORDERS ||--o| PAYMENTS : has
 @enduml
 ```
 
+Sơ đồ ERD tổng thể cho toàn bộ dự án:
+
+Ghi chú:
+
+- `PRODUCT_SEED_BATCHES` và `PRODUCT_SEED_ITEMS` là tùy chọn. Nếu seed dữ liệu chỉ là script chạy một lần thì không bắt buộc lưu 2 collection này.
+- `DASHBOARD_SNAPSHOTS` là tùy chọn. Nếu dashboard tính trực tiếp từ `ORDERS`, `PRODUCTS`, `USERS` theo thời gian thực thì không cần lưu snapshot.
+- `SEARCH_LOGS`, `PRODUCT_VIEW_EVENTS`, `USER_PRODUCT_EVENTS`, `RECOMMENDATION_RESULTS` phục vụ tìm kiếm nâng cao và gợi ý sản phẩm.
+
+```plantuml
+@startuml
+!pragma layout smetana
+hide circle
+skinparam linetype ortho
+
+entity "ROLES" as Roles {
+  * _id : ObjectId <<PK>>
+  --
+  name : String
+  description : String
+}
+
+entity "USERS" as Users {
+  * _id : ObjectId <<PK>>
+  --
+  role : ObjectId <<FK>>
+  fullName : String
+  email : String <<unique>>
+  password : String
+  status : String
+  createdAt : Date
+  updatedAt : Date
+}
+
+entity "ADDRESSES" as Addresses {
+  * _id : ObjectId <<PK>>
+  --
+  user : ObjectId <<FK>>
+  receiverName : String
+  phone : String
+  province : String
+  district : String
+  ward : String
+  detail : String
+  isDefault : Boolean
+}
+
+entity "BRANDS" as Brands {
+  * _id : ObjectId <<PK>>
+  --
+  name : String
+  slug : String
+  logoUrl : String
+}
+
+entity "CATEGORIES" as Categories {
+  * _id : ObjectId <<PK>>
+  --
+  parent : ObjectId <<FK>>
+  name : String
+  slug : String
+}
+
+entity "PRODUCTS" as Products {
+  * _id : ObjectId <<PK>>
+  --
+  brand : ObjectId <<FK>>
+  category : ObjectId <<FK>>
+  name : String
+  slug : String
+  price : Number
+  salePrice : Number
+  stock : Number
+  description : String
+  status : String
+  createdBy : ObjectId <<FK>>
+  updatedBy : ObjectId <<FK>>
+  createdAt : Date
+  updatedAt : Date
+}
+
+entity "PRODUCT_IMAGES" as ProductImages {
+  * _id : ObjectId <<PK>>
+  --
+  product : ObjectId <<FK>>
+  imageUrl : String
+  altText : String
+  sortOrder : Number
+}
+
+entity "PRODUCT_SPECIFICATIONS" as ProductSpecifications {
+  * _id : ObjectId <<PK>>
+  --
+  product : ObjectId <<FK>>
+  specKey : String
+  specValue : String
+  groupName : String
+}
+
+entity "INVENTORY_TRANSACTIONS" as InventoryTransactions {
+  * _id : ObjectId <<PK>>
+  --
+  product : ObjectId <<FK>>
+  admin : ObjectId <<FK>>
+  type : String
+  quantity : Number
+  note : String
+  createdAt : Date
+}
+
+entity "PRODUCT_SEED_BATCHES" as ProductSeedBatches {
+  * _id : ObjectId <<PK>>
+  --
+  name : String
+  source : String
+  createdBy : ObjectId <<FK>>
+  createdAt : Date
+}
+
+entity "PRODUCT_SEED_ITEMS" as ProductSeedItems {
+  * _id : ObjectId <<PK>>
+  --
+  seedBatch : ObjectId <<FK>>
+  product : ObjectId <<FK>>
+  originalName : String
+  importStatus : String
+}
+
+entity "CARTS" as Carts {
+  * _id : ObjectId <<PK>>
+  --
+  customer : ObjectId <<FK>>
+  status : String
+  createdAt : Date
+  updatedAt : Date
+}
+
+entity "CART_ITEMS" as CartItems {
+  * _id : ObjectId <<PK>>
+  --
+  cart : ObjectId <<FK>>
+  product : ObjectId <<FK>>
+  quantity : Number
+  priceSnapshot : Number
+  createdAt : Date
+  updatedAt : Date
+}
+
+entity "ORDERS" as Orders {
+  * _id : ObjectId <<PK>>
+  --
+  customer : ObjectId <<FK>>
+  shippingAddress : ObjectId <<FK>>
+  status : String
+  subtotal : Number
+  shippingFee : Number
+  discountAmount : Number
+  totalAmount : Number
+  paymentMethod : String
+  note : String
+  createdAt : Date
+  updatedAt : Date
+}
+
+entity "ORDER_ITEMS" as OrderItems {
+  * _id : ObjectId <<PK>>
+  --
+  order : ObjectId <<FK>>
+  product : ObjectId <<FK>>
+  productName : String
+  productImage : String
+  quantity : Number
+  price : Number
+  totalPrice : Number
+}
+
+entity "ORDER_STATUS_HISTORIES" as OrderStatusHistories {
+  * _id : ObjectId <<PK>>
+  --
+  order : ObjectId <<FK>>
+  changedBy : ObjectId <<FK>>
+  fromStatus : String
+  toStatus : String
+  note : String
+  createdAt : Date
+}
+
+entity "PAYMENTS" as Payments {
+  * _id : ObjectId <<PK>>
+  --
+  order : ObjectId <<FK>>
+  method : String
+  status : String
+  amount : Number
+  transactionCode : String
+  paidAt : Date
+  createdAt : Date
+}
+
+entity "ADMIN_AUDIT_LOGS" as AdminAuditLogs {
+  * _id : ObjectId <<PK>>
+  --
+  admin : ObjectId <<FK>>
+  action : String
+  targetType : String
+  targetId : ObjectId
+  beforeData : Object
+  afterData : Object
+  createdAt : Date
+}
+
+entity "DASHBOARD_SNAPSHOTS" as DashboardSnapshots {
+  * _id : ObjectId <<PK>>
+  --
+  periodType : String
+  periodValue : String
+  totalRevenue : Number
+  totalOrders : Number
+  totalProducts : Number
+  totalCustomers : Number
+  lowStockCount : Number
+  generatedAt : Date
+}
+
+entity "SEARCH_LOGS" as SearchLogs {
+  * _id : ObjectId <<PK>>
+  --
+  user : ObjectId <<FK>>
+  keyword : String
+  brand : String
+  category : String
+  minPrice : Number
+  maxPrice : Number
+  resultCount : Number
+  createdAt : Date
+}
+
+entity "PRODUCT_VIEW_EVENTS" as ProductViewEvents {
+  * _id : ObjectId <<PK>>
+  --
+  user : ObjectId <<FK>>
+  product : ObjectId <<FK>>
+  source : String
+  createdAt : Date
+}
+
+entity "USER_PRODUCT_EVENTS" as UserProductEvents {
+  * _id : ObjectId <<PK>>
+  --
+  user : ObjectId <<FK>>
+  product : ObjectId <<FK>>
+  eventType : String
+  score : Number
+  createdAt : Date
+}
+
+entity "RECOMMENDATION_RESULTS" as RecommendationResults {
+  * _id : ObjectId <<PK>>
+  --
+  user : ObjectId <<FK>>
+  product : ObjectId <<FK>>
+  recommendedProduct : ObjectId <<FK>>
+  reason : String
+  score : Number
+  createdAt : Date
+}
+
+Roles ||--o{ Users : "phân quyền"
+Users ||--o{ Addresses : "có địa chỉ"
+Users ||--o| Carts : "có giỏ hàng"
+Users ||--o{ Orders : "đặt hàng"
+Users ||--o{ AdminAuditLogs : "thao tác admin"
+Users ||--o{ SearchLogs : "tìm kiếm"
+Users ||--o{ ProductViewEvents : "xem sản phẩm"
+Users ||--o{ UserProductEvents : "tương tác"
+Users ||--o{ RecommendationResults : "nhận gợi ý"
+
+Brands ||--o{ Products : "sở hữu sản phẩm"
+Categories ||--o{ Products : "phân loại"
+Categories ||--o{ Categories : "danh mục cha-con"
+Products ||--o{ ProductImages : "có ảnh"
+Products ||--o{ ProductSpecifications : "có thông số"
+Products ||--o{ InventoryTransactions : "biến động kho"
+Products ||--o{ CartItems : "trong giỏ hàng"
+Products ||--o{ OrderItems : "trong đơn hàng"
+Products ||--o{ ProductViewEvents : "được xem"
+Products ||--o{ UserProductEvents : "được tương tác"
+Products ||--o{ RecommendationResults : "sản phẩm nguồn"
+Products ||--o{ RecommendationResults : "sản phẩm được gợi ý"
+
+ProductSeedBatches ||--o{ ProductSeedItems : "gồm dòng seed"
+Products ||--o{ ProductSeedItems : "được tạo từ seed"
+
+Carts ||--o{ CartItems : "gồm"
+Orders ||--o{ OrderItems : "gồm"
+Orders ||--o{ OrderStatusHistories : "có lịch sử trạng thái"
+Orders ||--o| Payments : "thanh toán"
+Addresses ||--o{ Orders : "dùng giao hàng"
+Users ||--o{ OrderStatusHistories : "cập nhật trạng thái"
+
+Orders ||..o{ DashboardSnapshots : "nguồn tổng hợp"
+Products ||..o{ DashboardSnapshots : "nguồn tổng hợp"
+Users ||..o{ DashboardSnapshots : "nguồn tổng hợp"
+@enduml
+```
+
 ### 3. Luồng mua hàng dự kiến
 
 Phần này sẽ được triển khai sau Product API, nhưng nên mô tả sớm để thống nhất cách các module sản phẩm, giỏ hàng và đơn hàng phối hợp với nhau.
