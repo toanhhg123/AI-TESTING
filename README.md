@@ -77,6 +77,12 @@ API đăng nhập:
 POST /api/auth/login
 ```
 
+Tài liệu backend Auth và Product Manager:
+
+```text
+docs/backend-auth-product-guide.md
+```
+
 ## Phân tích backend ưu tiên
 
 Phần backend nên được triển khai theo thứ tự ưu tiên để hệ thống có luồng demo hoàn chỉnh sớm. Hai nhóm chức năng cần làm đầu tiên là xác thực/phân quyền và quản lý sản phẩm.

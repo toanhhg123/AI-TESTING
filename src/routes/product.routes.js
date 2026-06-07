@@ -1,10 +1,10 @@
 const router = require('express').Router();
 
-const placeholderController = require('../controllers/placeholder.controller');
+const productController = require('../controllers/product.controller');
 
-router.get('/', placeholderController.notImplemented('List products with filters'));
-router.get('/search', placeholderController.notImplemented('Search products'));
-router.get('/recommendations', placeholderController.notImplemented('Recommend products'));
-router.get('/:id', placeholderController.notImplemented('Get product detail'));
+router.get('/', productController.listPublicProducts);
+router.get('/search', productController.searchProducts);
+router.get('/recommendations', productController.getRecommendations);
+router.get('/:id', productController.getProductDetail);
 
 module.exports = router;
