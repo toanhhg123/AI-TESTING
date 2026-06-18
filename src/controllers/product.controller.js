@@ -64,6 +64,14 @@ function buildProductFilter(query, options = {}) {
     filter.category = new RegExp(`^${escapeRegex(query.category)}$`, 'i');
   }
 
+  if (query.ram) {
+    filter['specifications.ram'] = new RegExp(`^${escapeRegex(query.ram)}$`, 'i');
+  }
+
+  if (query.storage) {
+    filter['specifications.storage'] = new RegExp(`^${escapeRegex(query.storage)}$`, 'i');
+  }
+
   const minPrice = toNumber(query.minPrice, null);
   const maxPrice = toNumber(query.maxPrice, null);
 

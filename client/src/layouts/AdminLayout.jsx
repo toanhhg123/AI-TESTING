@@ -41,11 +41,13 @@ export default function AdminLayout() {
     );
   }
 
+  const avatarInitial = currentUser?.fullName ? currentUser.fullName.trim().charAt(0).toUpperCase() : 'A';
+
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <NavLink className="brand admin-brand" to="/">
-          <Home size={20} />
+          <Home size={22} />
           <span>Mobile Store</span>
         </NavLink>
 
@@ -63,9 +65,14 @@ export default function AdminLayout() {
         </nav>
 
         <div className="admin-user-box">
-          <span>{currentUser.fullName}</span>
-          <strong>{currentUser.email}</strong>
-          <button type="button" onClick={handleLogout}>
+          <div className="admin-user-info-card">
+            <div className="admin-avatar">{avatarInitial}</div>
+            <div className="admin-user-meta">
+              <span>{currentUser.fullName}</span>
+              <strong>{currentUser.email}</strong>
+            </div>
+          </div>
+          <button className="admin-logout-btn" type="button" onClick={handleLogout}>
             Đăng xuất
           </button>
         </div>

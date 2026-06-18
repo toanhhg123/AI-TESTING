@@ -1,8 +1,9 @@
 import { Bot, Search, ShieldCheck, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import { getProducts } from '../api/productApi';
 import ProductCard from '../components/ProductCard.jsx';
-import { mockProducts } from '../data/mockProducts.js';
 
 const features = [
   { icon: Search, title: 'Tìm kiếm thông minh', text: 'Lọc theo thương hiệu, giá và cấu hình.' },
@@ -12,6 +13,25 @@ const features = [
 ];
 
 export default function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadFeaturedProducts() {
+      setIsLoading(true);
+      try {
+        // Fetch featured products (limit to 3 for the home section)
+        const response = await getProducts({ limit: 3, sort: 'featured' });
+        setFeaturedProducts(response.data.items || []);
+      } catch (error) {
+        console.error('Không thể tải danh sách sản phẩm nổi bật:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadFeaturedProducts();
+  }, []);
+
   return (
     <>
       <section className="hero">
@@ -64,11 +84,23 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="product-grid">
-          {mockProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--muted)' }}>
+            Đang tải sản phẩm nổi bật...
+          </div>
+        ) : (
+          <div className="product-grid">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+
+            {!isLoading && featuredProducts.length === 0 && (
+              <div className="empty-state" style={{ gridColumn: 'span 3', textAlign: 'center', padding: '40px' }}>
+                Chưa có sản phẩm nổi bật nào được đăng bán.
+              </div>
+            )}
+          </div>
+        )}
       </section>
     </>
   );

@@ -211,6 +211,8 @@ brand
 category
 minPrice
 maxPrice
+ram
+storage
 sort
 page
 limit
@@ -426,7 +428,7 @@ curl "http://localhost:3000/api/admin/products?limit=5" \
 ## 9. Ghi chú triển khai
 
 - Product delete hiện là soft delete, không xóa document khỏi MongoDB.
-- Public Product API chỉ trả sản phẩm `status=active`.
+- Public Product API chỉ trả sản phẩm `status=active` (hỗ trợ lọc thêm `ram` và `storage` lồng ghép trong `specifications`).
 - Admin Product API có thể xem cả `active`, `inactive`, `deleted`.
-- Recommendation hiện là rule-based theo sản phẩm nguồn, brand, category, giá gần nhau, `isFeatured` và `soldCount`.
-- Dashboard, Cart, Order mới ở mức định hướng trong document, chưa triển khai đầy đủ trong code ở bước này.
+- Recommendation hiện là rule-based theo sản phẩm nguồn, brand, category, giá gần nhau, `isFeatured` và `soldCount`, đã tích hợp hiển thị sản phẩm liên quan ở chân trang chi tiết.
+- Dashboard đã được làm giao diện đẹp mắt (thẻ thống kê, biểu đồ CSS, nhật ký hoạt động); các trang Cart, Order, và User management hiện tại hiển thị thông báo "Chức năng đang phát triển" một cách chuyên nghiệp ở phía frontend và sẽ được kết nối API đầy đủ ở bước tiếp theo.

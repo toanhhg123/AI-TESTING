@@ -917,3 +917,22 @@ client/
     routes/
     styles/
 ```
+
+## Nhật ký cập nhật tính năng (Changelog)
+
+### 1. Nâng cấp Giao diện Quản trị (Admin UI/UX)
+*   **Sidebar tối màu cao cấp**: Sidebar tối màu phong cách chuyên nghiệp (`position: sticky`), độc lập không trôi theo trang, tích hợp Card thông tin Admin và Avatar gradient.
+*   **Dashboard sinh động**: Tích hợp các thẻ chỉ số tăng trưởng phần trăm, biểu đồ CSS cột doanh thu (hỗ trợ hover hiển thị Tooltip), và dòng thời gian hoạt động hệ thống mới nhất.
+*   **Modal Form tiện lợi**: Trình nhập liệu và upload ảnh sản phẩm (Dashed Dropzone có nút xóa nhanh trên preview) đã được chuyển đổi sang dạng Modal Overlay làm mờ nền (`backdrop-filter: blur(8px)`) trượt mở mượt mà.
+*   **Trang chờ phát triển**: Đơn hàng và Người dùng được bổ sung các Alert Card trạng thái "Chức năng đang phát triển" chuyên nghiệp.
+
+### 2. Tích hợp API cho trang Người dùng (Customer Client)
+*   **Trang chủ (Home)**: Tải và hiển thị động danh sách 3 sản phẩm nổi bật/mới nhất trực tiếp từ cơ sở dữ liệu MongoDB.
+*   **Trang danh mục (Catalog)**: 
+    *   Tích hợp bộ lọc đa năng: Thương hiệu, Khoảng giá, bộ nhớ RAM, dung lượng lưu trữ (Storage).
+    *   Hỗ trợ sắp xếp theo Mới nhất, Nổi bật, Bán chạy, Giá tăng/giảm.
+    *   Hoạt động phân trang (Pagination) mượt mà (giới hạn 6 sản phẩm/trang), tự động reset về trang 1 khi thay đổi bộ lọc.
+*   **Trang chi tiết (Detail)**: Tải động chi tiết sản phẩm dựa trên ID sản phẩm từ URL, tự động xây dựng bảng cấu hình động và đề xuất **Sản phẩm liên quan** chân trang bằng thuật toán so khớp hãng, danh mục, tầm giá.
+
+### 3. Nâng cấp API Backend
+*   **Bộ lọc thông số kỹ thuật**: Mở rộng API `/api/products` để hỗ trợ truy vấn các trường lồng nhau `specifications.ram` và `specifications.storage` bằng cú pháp Dot-Notation của Mongoose (hỗ trợ Regex không phân biệt hoa/thường).

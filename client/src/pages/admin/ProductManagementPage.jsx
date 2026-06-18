@@ -1,4 +1,4 @@
-import { Edit, Plus, RefreshCcw, Search, Trash2, X } from 'lucide-react';
+import { Edit, Plus, RefreshCcw, Search, Trash2, UploadCloud, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -347,101 +347,119 @@ export default function ProductManagementPage() {
       {successMessage ? <p className="form-message success">{successMessage}</p> : null}
 
       {isFormOpen ? (
-        <section className="admin-form-panel">
-          <div className="admin-form-header">
-            <div>
-              <p className="eyebrow">{editingProduct ? 'Cập nhật' : 'Tạo mới'}</p>
-              <h2>{editingProduct ? editingProduct.name : 'Sản phẩm mới'}</h2>
-            </div>
-            <button className="icon-button" type="button" onClick={closeForm}>
-              <X size={18} />
-            </button>
-          </div>
+        <div className="modal-overlay" onClick={closeForm}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <section className="admin-form-panel">
+              <div className="admin-form-header">
+                <div>
+                  <p className="eyebrow">{editingProduct ? 'Cập nhật' : 'Tạo mới'}</p>
+                  <h2>{editingProduct ? editingProduct.name : 'Sản phẩm mới'}</h2>
+                </div>
+                <button className="icon-button" type="button" onClick={closeForm}>
+                  <X size={18} />
+                </button>
+              </div>
 
-          <form className="product-admin-form" onSubmit={handleSubmit}>
-            <label>
-              Tên sản phẩm
-              <input name="name" value={form.name} onChange={updateForm} required />
-            </label>
-            <label>
-              SKU
-              <input name="sku" value={form.sku} onChange={updateForm} placeholder="IP15-128-BLK" />
-            </label>
-            <label>
-              Thương hiệu
-              <input name="brand" value={form.brand} onChange={updateForm} required />
-            </label>
-            <label>
-              Danh mục
-              <select name="category" value={form.category} onChange={updateForm} required>
-                <option value="Điện thoại">Điện thoại</option>
-                <option value="Máy tính bảng">Máy tính bảng</option>
-                <option value="Phụ kiện">Phụ kiện</option>
-              </select>
-            </label>
-            <label>
-              Giá
-              <input name="price" type="number" min="0" value={form.price} onChange={updateForm} required />
-            </label>
-            <label>
-              Giá khuyến mãi
-              <input name="salePrice" type="number" min="0" value={form.salePrice} onChange={updateForm} />
-            </label>
-            <label>
-              Tồn kho
-              <input name="stock" type="number" min="0" value={form.stock} onChange={updateForm} required />
-            </label>
-            <label>
-              Trạng thái
-              <select name="status" value={form.status} onChange={updateForm}>
-                <option value="active">Đang bán</option>
-                <option value="inactive">Ẩn</option>
-                <option value="deleted">Đã xóa</option>
-              </select>
-            </label>
-            <div className="form-span-2 image-upload-field">
-              <label>
-                Ảnh sản phẩm
-                <input type="file" accept="image/*" onChange={handleImageUpload} />
-              </label>
-              {form.imageData ? (
-                <div className="image-preview-box">
-                  <img src={form.imageData} alt="Preview sản phẩm" />
-                  <button className="button secondary" type="button" onClick={clearImage}>
-                    Xóa ảnh
+              <form className="product-admin-form" onSubmit={handleSubmit}>
+                <label>
+                  Tên sản phẩm
+                  <input name="name" value={form.name} onChange={updateForm} required />
+                </label>
+                <label>
+                  SKU
+                  <input name="sku" value={form.sku} onChange={updateForm} placeholder="IP15-128-BLK" />
+                </label>
+                <label>
+                  Thương hiệu
+                  <input name="brand" value={form.brand} onChange={updateForm} required />
+                </label>
+                <label>
+                  Danh mục
+                  <select name="category" value={form.category} onChange={updateForm} required>
+                    <option value="Điện thoại">Điện thoại</option>
+                    <option value="Máy tính bảng">Máy tính bảng</option>
+                    <option value="Phụ kiện">Phụ kiện</option>
+                  </select>
+                </label>
+                <label>
+                  Giá
+                  <input name="price" type="number" min="0" value={form.price} onChange={updateForm} required />
+                </label>
+                <label>
+                  Giá khuyến mãi
+                  <input name="salePrice" type="number" min="0" value={form.salePrice} onChange={updateForm} />
+                </label>
+                <label>
+                  Tồn kho
+                  <input name="stock" type="number" min="0" value={form.stock} onChange={updateForm} required />
+                </label>
+                <label>
+                  Trạng thái
+                  <select name="status" value={form.status} onChange={updateForm}>
+                    <option value="active">Đang bán</option>
+                    <option value="inactive">Ẩn</option>
+                    <option value="deleted">Đã xóa</option>
+                  </select>
+                </label>
+                <div className="form-span-2 image-upload-field">
+                  <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#334155' }}>Ảnh sản phẩm</span>
+                  <input 
+                    type="file" 
+                    id="admin-product-image-upload" 
+                    accept="image/*" 
+                    style={{ display: 'none' }} 
+                    onChange={handleImageUpload} 
+                  />
+                  
+                  {form.imageData ? (
+                    <div className="image-preview-wrapper">
+                      <img src={form.imageData} alt="Preview sản phẩm" />
+                      <button 
+                        className="image-preview-delete-btn" 
+                        type="button" 
+                        onClick={clearImage}
+                        title="Xóa ảnh"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="upload-dropzone" htmlFor="admin-product-image-upload">
+                      <UploadCloud size={28} />
+                      <span>Chọn file ảnh sản phẩm</span>
+                      <p>Định dạng PNG, JPG, WEBP. Tối đa 2MB.</p>
+                    </label>
+                  )}
+                </div>
+                <label className="form-span-2">
+                  Tags
+                  <input name="tags" value={form.tags} onChange={updateForm} placeholder="iphone, apple, camera" />
+                </label>
+                <label className="form-span-2">
+                  Mô tả
+                  <textarea name="description" value={form.description} rows="4" onChange={updateForm} />
+                </label>
+                <label className="checkbox-field form-span-2">
+                  <input
+                    name="isFeatured"
+                    type="checkbox"
+                    checked={form.isFeatured}
+                    onChange={updateForm}
+                  />
+                  Sản phẩm nổi bật
+                </label>
+                <div className="form-actions form-span-2">
+                  <button className="button secondary" type="button" onClick={closeForm}>
+                    Hủy
+                  </button>
+                  <button className="button primary" type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Đang lưu...' : 'Lưu sản phẩm'}
                   </button>
                 </div>
-              ) : (
-                <p>Ảnh sẽ được chuyển sang base64 và lưu trực tiếp trong database.</p>
-              )}
-            </div>
-            <label className="form-span-2">
-              Tags
-              <input name="tags" value={form.tags} onChange={updateForm} placeholder="iphone, apple, camera" />
-            </label>
-            <label className="form-span-2">
-              Mô tả
-              <textarea name="description" value={form.description} rows="4" onChange={updateForm} />
-            </label>
-            <label className="checkbox-field form-span-2">
-              <input
-                name="isFeatured"
-                type="checkbox"
-                checked={form.isFeatured}
-                onChange={updateForm}
-              />
-              Sản phẩm nổi bật
-            </label>
-            <div className="form-actions form-span-2">
-              <button className="button secondary" type="button" onClick={closeForm}>
-                Hủy
-              </button>
-              <button className="button primary" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Đang lưu...' : 'Lưu sản phẩm'}
-              </button>
-            </div>
-          </form>
-        </section>
+              </form>
+            </section>
+          </div>
+        </div>
       ) : null}
 
       <section className="admin-table-card">
