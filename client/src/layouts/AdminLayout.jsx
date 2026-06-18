@@ -1,5 +1,8 @@
 import { BarChart3, Boxes, ClipboardList, Home, Users } from 'lucide-react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+
+import { clearAuthSession, getStoredUser, onAuthChanged } from '../utils/authStorage';
 
 const adminLinks = [
   { to: '/admin', label: 'Dashboard', icon: BarChart3, end: true },
@@ -9,6 +12,35 @@ const adminLinks = [
 ];
 
 export default function AdminLayout() {
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+
+  useEffect(() => {
+    return onAuthChanged(() => {
+      setCurrentUser(getStoredUser());
+    });
+  }, []);
+
+  function handleLogout() {
+    clearAuthSession();
+    navigate('/admin/login');
+  }
+
+  if (currentUser?.role !== 'admin') {
+    return (
+      <main className="admin-auth-wall">
+        <section className="placeholder-panel admin-auth-panel">
+          <p className="eyebrow">Admin</p>
+          <h1>Yêu cầu quyền quản trị</h1>
+          <p>Vui lòng đăng nhập bằng tài khoản admin để truy cập khu vực quản trị hệ thống.</p>
+          <Link className="button primary" to="/admin/login">
+            Đăng nhập admin
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
@@ -29,6 +61,14 @@ export default function AdminLayout() {
             );
           })}
         </nav>
+
+        <div className="admin-user-box">
+          <span>{currentUser.fullName}</span>
+          <strong>{currentUser.email}</strong>
+          <button type="button" onClick={handleLogout}>
+            Đăng xuất
+          </button>
+        </div>
       </aside>
 
       <main className="admin-content">

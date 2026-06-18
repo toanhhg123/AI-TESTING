@@ -11,6 +11,7 @@ import ProductDetailPage from '../pages/ProductDetailPage.jsx';
 import ProductListPage from '../pages/ProductListPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
+import AdminLoginPage from '../pages/admin/AdminLoginPage.jsx';
 import OrderManagementPage from '../pages/admin/OrderManagementPage.jsx';
 import ProductManagementPage from '../pages/admin/ProductManagementPage.jsx';
 import UserManagementPage from '../pages/admin/UserManagementPage.jsx';
@@ -28,6 +29,8 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
+
+      <Route path="/admin/login" element={<AdminLoginPage />} />
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboardPage />} />

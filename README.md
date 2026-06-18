@@ -426,7 +426,7 @@ Validation khi admin tạo/cập nhật sản phẩm:
 - `price` phải lớn hơn hoặc bằng 0.
 - `stock` phải lớn hơn hoặc bằng 0.
 - `brand` và `category` nên có giá trị rõ ràng.
-- `images` có thể là mảng URL ảnh.
+- `images` có thể là mảng base64 data URL hoặc URL ảnh. Admin UI hiện upload ảnh và lưu base64 trực tiếp vào database.
 
 Thứ tự triển khai Product API:
 

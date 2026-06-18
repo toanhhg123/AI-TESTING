@@ -6,6 +6,9 @@ const { createSlug } = require('../utils/slug');
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 12;
 const MAX_LIMIT = 100;
+const MAX_PRODUCT_IMAGES = 5;
+const MAX_IMAGE_STRING_LENGTH = 4 * 1024 * 1024;
+const BASE64_IMAGE_PATTERN = /^data:image\/(png|jpe?g|webp|gif);base64,[a-z0-9+/=\s]+$/i;
 
 function toNumber(value, fallback) {
   const number = Number(value);
@@ -14,6 +17,29 @@ function toNumber(value, fallback) {
 
 function escapeRegex(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isValidImageSource(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const source = value.trim();
+
+  if (!source || source.length > MAX_IMAGE_STRING_LENGTH) {
+    return false;
+  }
+
+  if (BASE64_IMAGE_PATTERN.test(source)) {
+    return true;
+  }
+
+  try {
+    const url = new URL(source);
+    return ['http:', 'https:'].includes(url.protocol);
+  } catch (_error) {
+    return false;
+  }
 }
 
 function buildProductFilter(query, options = {}) {
@@ -140,7 +166,12 @@ function normalizeProductPayload(payload, options = {}) {
   }
 
   if (payload.images !== undefined) {
-    product.images = Array.isArray(payload.images) ? payload.images.filter(Boolean) : [];
+    product.images = Array.isArray(payload.images)
+      ? payload.images
+          .filter((image) => typeof image === 'string')
+          .map((image) => image.trim())
+          .filter(Boolean)
+      : [];
   }
 
   if (payload.tags !== undefined) {
@@ -196,6 +227,16 @@ function validateProductPayload(payload, { partial = false } = {}) {
 
   if (payload.status !== undefined && !['active', 'inactive', 'deleted'].includes(payload.status)) {
     errors.push('Trạng thái sản phẩm không hợp lệ.');
+  }
+
+  if (payload.images !== undefined) {
+    if (!Array.isArray(payload.images)) {
+      errors.push('images phải là mảng ảnh.');
+    } else if (payload.images.length > MAX_PRODUCT_IMAGES) {
+      errors.push(`Chỉ được upload tối đa ${MAX_PRODUCT_IMAGES} ảnh cho một sản phẩm.`);
+    } else if (payload.images.some((image) => !isValidImageSource(image))) {
+      errors.push('Ảnh sản phẩm phải là URL http(s) hoặc base64 data URL hợp lệ, dung lượng dưới 4MB.');
+    }
   }
 
   return errors;

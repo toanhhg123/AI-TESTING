@@ -320,7 +320,7 @@ Body:
   "price": 9990000,
   "salePrice": 8990000,
   "stock": 30,
-  "images": ["https://example.com/oppo-reno-12.jpg"],
+  "images": ["data:image/png;base64,iVBORw0KGgo..."],
   "description": "Điện thoại OPPO Reno 12 phục vụ dữ liệu demo.",
   "specifications": {
     "ram": "12GB",
@@ -339,8 +339,10 @@ Curl:
 curl -X POST http://localhost:3000/api/admin/products \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name":"OPPO Reno 12","sku":"OP-RENO12-256","brand":"OPPO","category":"Điện thoại","price":9990000,"salePrice":8990000,"stock":30,"description":"Điện thoại OPPO Reno 12 phục vụ dữ liệu demo.","specifications":{"ram":"12GB","storage":"256GB"},"tags":["oppo","android"],"isFeatured":true,"status":"active"}'
+  -d '{"name":"OPPO Reno 12","sku":"OP-RENO12-256","brand":"OPPO","category":"Điện thoại","price":9990000,"salePrice":8990000,"stock":30,"images":["data:image/png;base64,iVBORw0KGgo..."],"description":"Điện thoại OPPO Reno 12 phục vụ dữ liệu demo.","specifications":{"ram":"12GB","storage":"256GB"},"tags":["oppo","android"],"isFeatured":true,"status":"active"}'
 ```
+
+Frontend admin đọc file ảnh bằng `FileReader.readAsDataURL()` rồi gửi chuỗi base64 trong `images[0]`. Backend đã tăng giới hạn JSON body lên `10mb`, nhưng nên giữ ảnh demo dưới `2MB` để database nhẹ và API phản hồi nhanh.
 
 ### Xem chi tiết sản phẩm trong admin
 
