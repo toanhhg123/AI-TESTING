@@ -1,9 +1,12 @@
 import { ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 import { getProductById, getRecommendations } from '../api/productApi';
+import { addCartItem } from '../api/cartApi';
+import { getStoredUser } from '../utils/authStorage';
 import ProductCard from '../components/ProductCard.jsx';
+import { useNotification } from '../components/NotificationProvider.jsx';
 
 function formatCurrency(value) {
   if (typeof value === 'number') {
@@ -23,6 +26,10 @@ export default function ProductDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRelatedLoading, setIsRelatedLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+
+  const navigate = useNavigate();
+  const { showToast, showConfirm } = useNotification();
 
   useEffect(() => {
     async function loadProductDetail() {
@@ -58,6 +65,27 @@ export default function ProductDetailPage() {
     loadRelatedProducts();
   }, [id]);
 
+  async function handleAddToCart() {
+    const user = getStoredUser();
+    if (!user) {
+      showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.', 'warning');
+      navigate('/login');
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      await addCartItem({ productId: product._id, quantity: 1 });
+      showToast(`Đã thêm ${product.name} vào giỏ hàng thành công!`, 'success');
+    } catch (error) {
+      console.error('Lỗi thêm giỏ hàng:', error);
+      const msg = error.response?.data?.message || 'Không thể thêm sản phẩm vào giỏ hàng.';
+      showToast(msg, 'error');
+    } finally {
+      setIsAdding(false);
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="container page" style={{ textAlign: 'center', padding: '100px 0', color: 'var(--muted)' }}>
@@ -83,6 +111,7 @@ export default function ProductDetailPage() {
 
   const productImage = product.images?.[0] || 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80';
   const hasDiscount = typeof product.salePrice === 'number' && product.salePrice > 0 && product.salePrice < product.price;
+  const isOutOfStock = product.stock <= 0;
 
   return (
     <div className="container page">
@@ -110,9 +139,15 @@ export default function ProductDetailPage() {
             {product.description || 'Chưa có mô tả cho sản phẩm này.'}
           </p>
 
-          <button className="button primary" type="button" style={{ width: '100%', maxWidth: '280px', minHeight: '48px' }}>
+          <button
+            className="button primary"
+            type="button"
+            style={{ width: '100%', maxWidth: '280px', minHeight: '48px' }}
+            onClick={handleAddToCart}
+            disabled={isAdding || isOutOfStock}
+          >
             <ShoppingCart size={18} />
-            Thêm vào giỏ hàng
+            {isOutOfStock ? 'Hết hàng' : isAdding ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
           </button>
 
           {product.specifications && Object.keys(product.specifications).length > 0 ? (

@@ -1,5 +1,10 @@
 import { ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
+import { addCartItem } from '../api/cartApi';
+import { getStoredUser } from '../utils/authStorage';
+import { useNotification } from './NotificationProvider.jsx';
 
 function formatCurrency(value) {
   if (typeof value === 'number') {
@@ -15,6 +20,10 @@ function formatCurrency(value) {
 export default function ProductCard({ product }) {
   const productId = product._id || product.id;
   const productImage = product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80';
+  const [isAdding, setIsAdding] = useState(false);
+
+  const { showToast, showConfirm } = useNotification();
+  const navigate = useNavigate();
   
   // Format specifications text
   let specText = product.spec || '';
@@ -31,6 +40,35 @@ export default function ProductCard({ product }) {
   }
 
   const hasDiscount = typeof product.salePrice === 'number' && product.salePrice > 0 && product.salePrice < product.price;
+
+  async function handleAddCartClick(e) {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const user = getStoredUser();
+    if (!user) {
+      showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.', 'warning');
+      navigate('/login');
+      return;
+    }
+
+    if (product.stock <= 0) {
+      showToast('Sản phẩm hiện đã hết hàng.', 'warning');
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      await addCartItem({ productId, quantity: 1 });
+      showToast(`Đã thêm ${product.name} vào giỏ hàng thành công!`, 'success');
+    } catch (err) {
+      console.error('Lỗi khi thêm giỏ hàng:', err);
+      const msg = err.response?.data?.message || 'Thêm sản phẩm vào giỏ hàng thất bại.';
+      showToast(msg, 'error');
+    } finally {
+      setIsAdding(false);
+    }
+  }
 
   return (
     <article className="product-card">
@@ -55,7 +93,17 @@ export default function ProductCard({ product }) {
               </span>
             )}
           </div>
-          <button className="icon-button dark" type="button" aria-label="Thêm vào giỏ hàng">
+          <button
+            className="icon-button dark"
+            type="button"
+            aria-label="Thêm vào giỏ hàng"
+            onClick={handleAddCartClick}
+            disabled={isAdding || product.stock <= 0}
+            style={{
+              opacity: product.stock <= 0 ? 0.5 : 1,
+              cursor: product.stock <= 0 ? 'not-allowed' : 'pointer',
+            }}
+          >
             <ShoppingCart size={18} />
           </button>
         </div>

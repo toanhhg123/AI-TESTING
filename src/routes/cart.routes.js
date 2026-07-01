@@ -1,11 +1,15 @@
 const router = require('express').Router();
 
-const placeholderController = require('../controllers/placeholder.controller');
+const cartController = require('../controllers/cart.controller');
+const { authenticate } = require('../middlewares/auth.middleware');
 
-router.get('/', placeholderController.notImplemented('Get current cart'));
-router.post('/items', placeholderController.notImplemented('Add item to cart'));
-router.patch('/items/:productId', placeholderController.notImplemented('Update cart item quantity'));
-router.delete('/items/:productId', placeholderController.notImplemented('Remove item from cart'));
-router.delete('/', placeholderController.notImplemented('Clear cart'));
+// Protect all cart routes with authenticate middleware
+router.use(authenticate);
+
+router.get('/', cartController.getCart);
+router.post('/items', cartController.addCartItem);
+router.patch('/items/:productId', cartController.updateCartItem);
+router.delete('/items/:productId', cartController.removeCartItem);
+router.delete('/', cartController.clearCart);
 
 module.exports = router;

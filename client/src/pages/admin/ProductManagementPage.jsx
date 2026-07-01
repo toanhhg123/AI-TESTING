@@ -1,5 +1,6 @@
 import { Edit, Plus, RefreshCcw, Search, Trash2, UploadCloud, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useNotification } from '../../components/NotificationProvider.jsx';
 
 import {
   createAdminProduct,
@@ -69,6 +70,7 @@ function toPayload(form) {
 }
 
 export default function ProductManagementPage() {
+  const { showToast, showConfirm } = useNotification();
   const [products, setProducts] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -248,7 +250,10 @@ export default function ProductManagementPage() {
   }
 
   async function handleDelete(product) {
-    const confirmed = window.confirm(`Xóa sản phẩm "${product.name}"?`);
+    const confirmed = await showConfirm(
+      'Xóa sản phẩm',
+      `Bạn có chắc chắn muốn xóa sản phẩm "${product.name}" không?`
+    );
 
     if (!confirmed) {
       return;
@@ -259,7 +264,7 @@ export default function ProductManagementPage() {
 
     try {
       await deleteAdminProduct(product._id);
-      setSuccessMessage('Đã xóa sản phẩm.');
+      showToast('Đã xóa sản phẩm thành công!', 'success');
       await loadProducts(pagination.page);
     } catch (error) {
       setErrorMessage(error.response?.data?.message || 'Không thể xóa sản phẩm.');
