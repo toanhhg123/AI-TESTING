@@ -124,11 +124,11 @@ async function getOrderDetail(req, res, next) {
 
 async function searchOrder(req, res, next) {
   try {
-    const { orderId, phoneNumber } = req.query;
+    const { orderId } = req.query;
 
-    if (!orderId || !phoneNumber) {
+    if (!orderId) {
       return res.status(400).json({
-        message: 'Vui lòng cung cấp đầy đủ mã đơn hàng và số điện thoại tra cứu.',
+        message: 'Vui lòng cung cấp mã đơn hàng tra cứu.',
       });
     }
 
@@ -144,18 +144,100 @@ async function searchOrder(req, res, next) {
       return res.status(400).json({ message: 'Mã đơn hàng tra cứu không hợp lệ.' });
     }
 
-    const order = await Order.findOne({
-      _id: cleanedId,
-      phoneNumber: phoneNumber.trim(),
-    }).populate('items.product', 'name brand images price');
+    const order = await Order.findById(cleanedId)
+      .populate('items.product', 'name brand images price');
 
     if (!order) {
       return res.status(404).json({
-        message: 'Không tìm thấy đơn hàng khớp với thông tin tra cứu.',
+        message: 'Không tìm thấy đơn hàng khớp với mã cung cấp.',
       });
     }
 
     res.json({ order });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function listAllOrders(req, res, next) {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 10);
+    const { status, keyword } = req.query;
+
+    const filter = {};
+
+    if (status) {
+      filter.status = status;
+    }
+
+    if (keyword) {
+      const keywordTrim = keyword.trim();
+      const keywordRegex = new RegExp(keywordTrim, 'i');
+      const orConditions = [
+        { receiverName: keywordRegex },
+        { phoneNumber: keywordRegex },
+      ];
+
+      let cleanedId = keywordTrim;
+      if (cleanedId.startsWith('#')) cleanedId = cleanedId.substring(1);
+      if (cleanedId.toUpperCase().startsWith('DH-')) cleanedId = cleanedId.substring(3);
+
+      if (mongoose.Types.ObjectId.isValid(cleanedId)) {
+        orConditions.push({ _id: cleanedId });
+      }
+
+      filter.$or = orConditions;
+    }
+
+    const total = await Order.countDocuments(filter);
+    const orders = await Order.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('customer', 'fullName email')
+      .populate('items.product', 'name brand price images');
+
+    res.json({
+      items: orders,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateOrderStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['pending', 'confirmed', 'shipping', 'completed', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Trạng thái đơn hàng không hợp lệ.' });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    )
+      .populate('customer', 'fullName email')
+      .populate('items.product', 'name brand price images');
+
+    if (!order) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng.' });
+    }
+
+    res.json({
+      message: 'Cập nhật trạng thái đơn hàng thành công.',
+      order,
+    });
   } catch (error) {
     next(error);
   }
@@ -166,4 +248,6 @@ module.exports = {
   listCustomerOrders,
   getOrderDetail,
   searchOrder,
+  listAllOrders,
+  updateOrderStatus,
 };

@@ -17,7 +17,6 @@ export default function OrderHistoryPage() {
 
   // Anonymous order lookup state
   const [lookupId, setLookupId] = useState('');
-  const [lookupPhone, setLookupPhone] = useState('');
   const [lookupResult, setLookupResult] = useState(null);
   const [lookupError, setLookupError] = useState('');
   const [isLookingUp, setIsLookingUp] = useState(false);
@@ -48,8 +47,8 @@ export default function OrderHistoryPage() {
 
   async function handleLookup(e) {
     e.preventDefault();
-    if (!lookupId.trim() || !lookupPhone.trim()) {
-      setLookupError('Vui lòng cung cấp mã đơn hàng và số điện thoại giao hàng.');
+    if (!lookupId.trim()) {
+      setLookupError('Vui lòng cung cấp mã đơn hàng.');
       return;
     }
 
@@ -58,7 +57,7 @@ export default function OrderHistoryPage() {
     setIsLookingUp(true);
 
     try {
-      const response = await lookupOrder(lookupId, lookupPhone);
+      const response = await lookupOrder(lookupId);
       setLookupResult(response.data.order);
     } catch (err) {
       console.error('Lỗi tra cứu đơn hàng:', err);
@@ -224,17 +223,7 @@ export default function OrderHistoryPage() {
                   />
                 </div>
 
-                <div className="form-group" style={{ marginBottom: '20px' }}>
-                  <label htmlFor="lookupPhone">Số điện thoại mua hàng</label>
-                  <input
-                    id="lookupPhone"
-                    type="tel"
-                    placeholder="Nhập số điện thoại nhận hàng"
-                    value={lookupPhone}
-                    onChange={(e) => setLookupPhone(e.target.value)}
-                    required
-                  />
-                </div>
+
 
                 <button className="lookup-btn" type="submit" disabled={isLookingUp}>
                   {isLookingUp ? 'Đang kiểm tra...' : 'Tra cứu đơn hàng'}

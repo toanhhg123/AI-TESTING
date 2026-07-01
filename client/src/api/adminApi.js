@@ -28,6 +28,10 @@ export function getAdminOrders(params) {
   return axiosClient.get('/admin/orders', { params });
 }
 
+export function updateAdminOrderStatus(id, status) {
+  return axiosClient.patch(`/admin/orders/${id}/status`, { status });
+}
+
 export function getAdminUsers(params) {
   return axiosClient.get('/admin/users', { params });
 }

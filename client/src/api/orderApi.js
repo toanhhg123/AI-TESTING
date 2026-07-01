@@ -12,8 +12,8 @@ export function createOrder(payload) {
   return axiosClient.post('/orders', payload);
 }
 
-export function lookupOrder(orderId, phoneNumber) {
+export function lookupOrder(orderId) {
   return axiosClient.get('/orders/lookup', {
-    params: { orderId, phoneNumber },
+    params: { orderId },
   });
 }
