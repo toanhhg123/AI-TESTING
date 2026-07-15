@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, ClipboardList, Home, Users } from 'lucide-react';
+import { BarChart3, Boxes, ClipboardList, Home, Users, Package, Folder, Ticket } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 
@@ -7,8 +7,11 @@ import { clearAuthSession, getStoredUser, onAuthChanged } from '../utils/authSto
 const adminLinks = [
   { to: '/admin', label: 'Dashboard', icon: BarChart3, end: true },
   { to: '/admin/products', label: 'Sản phẩm', icon: Boxes },
+  { to: '/admin/categories', label: 'Danh mục', icon: Folder },
+  { to: '/admin/inventory', label: 'Kho hàng', icon: Package },
   { to: '/admin/orders', label: 'Đơn hàng', icon: ClipboardList },
   { to: '/admin/users', label: 'Người dùng', icon: Users },
+  { to: '/admin/coupons', label: 'Mã giảm giá', icon: Ticket },
 ];
 
 export default function AdminLayout() {

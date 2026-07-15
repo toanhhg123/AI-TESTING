@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../components/PageHeader.jsx';
 import { getCart } from '../api/cartApi';
 import { createOrder } from '../api/orderApi';
+import { validateCoupon } from '../api/couponApi';
 import { getStoredUser } from '../utils/authStorage';
 
 export default function CheckoutPage() {
@@ -19,6 +20,14 @@ export default function CheckoutPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cod');
+
+  // Coupon states
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   const currentUser = getStoredUser();
   const navigate = useNavigate();
@@ -35,9 +44,15 @@ export default function CheckoutPage() {
         const cartData = response.data.cart;
         setCart(cartData);
 
-        // Pre-fill receiverName from user profile
+        // Pre-fill fields from user profile
         if (currentUser.fullName) {
           setReceiverName(currentUser.fullName);
+        }
+        if (currentUser.phone) {
+          setPhoneNumber(currentUser.phone);
+        }
+        if (currentUser.shippingAddress) {
+          setShippingAddress(currentUser.shippingAddress);
         }
       } catch (err) {
         console.error('Lỗi khi lấy thông tin giỏ hàng:', err);
@@ -49,6 +64,45 @@ export default function CheckoutPage() {
 
     fetchCartData();
   }, [navigate]);
+
+  async function handleApplyCoupon(e) {
+    e.preventDefault();
+    if (!couponInput.trim()) {
+      setCouponError('Vui lòng nhập mã giảm giá.');
+      setCouponSuccess('');
+      return;
+    }
+
+    setIsValidatingCoupon(true);
+    setCouponError('');
+    setCouponSuccess('');
+
+    try {
+      const response = await validateCoupon({
+        code: couponInput,
+        orderAmount: subtotal,
+      });
+      setDiscountAmount(response.data.discountAmount);
+      setAppliedCoupon(response.data.code);
+      setCouponSuccess(response.data.message || 'Áp dụng mã giảm giá thành công.');
+    } catch (err) {
+      console.error('Lỗi áp dụng mã giảm giá:', err);
+      const msg = err.response?.data?.message || 'Không thể áp dụng mã giảm giá này.';
+      setCouponError(msg);
+      setDiscountAmount(0);
+      setAppliedCoupon('');
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  }
+
+  function handleRemoveCoupon() {
+    setAppliedCoupon('');
+    setDiscountAmount(0);
+    setCouponInput('');
+    setCouponSuccess('');
+    setCouponError('');
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -66,6 +120,7 @@ export default function CheckoutPage() {
         phoneNumber,
         shippingAddress,
         paymentMethod,
+        couponCode: appliedCoupon || undefined,
       });
       setCreatedOrder(response.data.order);
     } catch (err) {
@@ -347,13 +402,66 @@ export default function CheckoutPage() {
             <span>Tạm tính</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
+          
+          {/* Coupon Input Area */}
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="text"
+                placeholder="Nhập mã giảm giá"
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value)}
+                disabled={!!appliedCoupon || isValidatingCoupon}
+                style={{
+                  flex: 1,
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid var(--border)',
+                  outline: 'none',
+                  fontSize: '0.85rem',
+                  background: 'var(--surface)',
+                  color: 'var(--ink)',
+                }}
+              />
+              {appliedCoupon ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveCoupon}
+                  className="button secondary"
+                  style={{ minHeight: '36px', padding: '0 12px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
+                >
+                  Hủy
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  disabled={isValidatingCoupon || !couponInput.trim()}
+                  className="button primary"
+                  style={{ minHeight: '36px', padding: '0 12px', fontSize: '0.85rem', whiteSpace: 'nowrap' }}
+                >
+                  {isValidatingCoupon ? 'Đang áp...' : 'Áp dụng'}
+                </button>
+              )}
+            </div>
+            {couponError && <p style={{ color: 'var(--danger)', fontSize: '0.75rem', marginTop: '6px', marginBottom: 0 }}>{couponError}</p>}
+            {couponSuccess && <p style={{ color: 'var(--accent)', fontSize: '0.75rem', marginTop: '6px', marginBottom: 0 }}>{couponSuccess}</p>}
+          </div>
+
+          {discountAmount > 0 && (
+            <div className="summary-row" style={{ color: 'var(--accent)', fontWeight: 600 }}>
+              <span>Khuyến mãi ({appliedCoupon})</span>
+              <span>-{formatPrice(discountAmount)}</span>
+            </div>
+          )}
+
           <div className="summary-row">
             <span>Phí vận chuyển</span>
             <span>{shippingFee === 0 ? 'Miễn phí' : formatPrice(shippingFee)}</span>
           </div>
-          <div className="summary-row total">
+          <div className="summary-row total" style={{ borderTop: '1px solid var(--border)', paddingTop: '14px' }}>
             <span>Tổng cộng</span>
-            <span className="total-price">{formatPrice(total)}</span>
+            <span className="total-price">{formatPrice(Math.max(0, subtotal - discountAmount) + shippingFee)}</span>
           </div>
 
           <button

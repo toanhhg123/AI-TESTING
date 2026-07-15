@@ -1,11 +1,18 @@
-import { SlidersHorizontal } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { SlidersHorizontal, Search } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import PageHeader from '../components/PageHeader.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import { getProducts } from '../api/productApi';
 
 export default function ProductListPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchInputRef = useRef(null);
+
+  const focusParam = searchParams.get('focus');
+  const queryParam = searchParams.get('q') || '';
+
   const [products, setProducts] = useState([]);
   const [brand, setBrand] = useState('');
   const [priceRange, setPriceRange] = useState('');
@@ -15,6 +22,19 @@ export default function ProductListPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [keyword, setKeyword] = useState(queryParam);
+
+  // Sync keyword state when URL query param changes (e.g. from header click)
+  useEffect(() => {
+    setKeyword(queryParam);
+  }, [queryParam]);
+
+  // Autofocus logic
+  useEffect(() => {
+    if (focusParam === 'search' && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [focusParam]);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -29,6 +49,7 @@ export default function ProductListPage() {
         if (brand) params.brand = brand;
         if (ram) params.ram = ram;
         if (storage) params.storage = storage;
+        if (keyword) params.keyword = keyword;
 
         if (priceRange === 'under-5') {
           params.maxPrice = 5000000;
@@ -50,13 +71,29 @@ export default function ProductListPage() {
     }
 
     fetchProducts();
-  }, [brand, priceRange, ram, storage, sort, page]);
+  }, [brand, priceRange, ram, storage, sort, page, keyword]);
 
   function handleFilterChange(setter) {
     return (e) => {
       setter(e.target.value);
       setPage(1); // Reset to page 1 on filter/sort change
     };
+  }
+
+  function handleSearchChange(e) {
+    const val = e.target.value;
+    setKeyword(val);
+    setPage(1);
+
+    const newParams = new URLSearchParams(searchParams);
+    if (val) {
+      newParams.set('q', val);
+    } else {
+      newParams.delete('q');
+    }
+    // Remove focus param after initial focus
+    newParams.delete('focus');
+    setSearchParams(newParams, { replace: true });
   }
 
   return (
@@ -66,6 +103,36 @@ export default function ProductListPage() {
         title="Danh sách sản phẩm"
         description="Tìm kiếm thiết bị di động mong muốn bằng cách sử dụng bộ lọc thương hiệu, khoảng giá, cấu hình RAM, dung lượng và sắp xếp linh hoạt."
       />
+
+      <div className="search-bar-container" style={{ position: 'relative', marginBottom: '24px' }}>
+        <Search
+          size={18}
+          style={{
+            position: 'absolute',
+            left: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: 'var(--muted)',
+          }}
+        />
+        <input
+          ref={searchInputRef}
+          type="text"
+          placeholder="Tìm kiếm sản phẩm theo tên, thương hiệu, cấu hình..."
+          value={keyword}
+          onChange={handleSearchChange}
+          style={{
+            width: '100%',
+            padding: '12px 16px 12px 46px',
+            fontSize: '16px',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+            background: 'var(--surface)',
+            color: 'var(--ink)',
+            outline: 'none',
+          }}
+        />
+      </div>
 
       <div className="catalog-layout">
         <aside className="filter-panel">

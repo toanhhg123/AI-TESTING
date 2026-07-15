@@ -11,3 +11,11 @@ export function register(payload) {
 export function getCurrentUser() {
   return axiosClient.get('/auth/me');
 }
+
+export function updateProfile(payload) {
+  return axiosClient.patch('/auth/profile', payload);
+}
+
+export function changePassword(payload) {
+  return axiosClient.patch('/auth/change-password', payload);
+}

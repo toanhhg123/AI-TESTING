@@ -1,4 +1,3 @@
-import { Mail, MapPin, Phone, Smartphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -7,7 +6,6 @@ export default function Footer() {
       <div className="container footer-grid">
         <section className="footer-brand">
           <Link className="brand" to="/">
-            <Smartphone size={24} />
             <span>Mobile Store</span>
           </Link>
           <p>
@@ -24,32 +22,23 @@ export default function Footer() {
         </section>
 
         <section className="footer-column">
-          <h3>Hỗ trợ</h3>
+          <h3>Tài khoản</h3>
           <Link to="/login">Đăng nhập</Link>
           <Link to="/register">Tạo tài khoản</Link>
-          <Link to="/products">Tìm kiếm thông minh</Link>
+          <Link to="/products">Tìm kiếm sản phẩm</Link>
         </section>
 
-        <section className="footer-column contact-column">
-          <h3>Liên hệ demo</h3>
-          <p>
-            <Phone size={16} />
-            <span>0900 000 000</span>
-          </p>
-          <p>
-            <Mail size={16} />
-            <span>support@mobilestore.local</span>
-          </p>
-          <p>
-            <MapPin size={16} />
-            <span>TP. Hồ Chí Minh</span>
-          </p>
+        <section className="footer-column">
+          <h3>Hỗ trợ</h3>
+          <p>0900 000 000</p>
+          <p>support@mobilestore.local</p>
+          <p>TP. Hồ Chí Minh</p>
         </section>
       </div>
 
       <div className="container footer-bottom">
-        <p>Mobile Store - Đồ án website bán thiết bị di động.</p>
-        <p>Node.js, React và MongoDB.</p>
+        <p>Copyright © 2026 Mobile Store. Đồ án website bán thiết bị di động.</p>
+        <p>Node.js · React · MongoDB</p>
       </div>
     </footer>
   );

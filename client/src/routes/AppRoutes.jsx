@@ -10,11 +10,15 @@ import OrderHistoryPage from '../pages/OrderHistoryPage.jsx';
 import ProductDetailPage from '../pages/ProductDetailPage.jsx';
 import ProductListPage from '../pages/ProductListPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
+import ProfilePage from '../pages/ProfilePage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
 import AdminLoginPage from '../pages/admin/AdminLoginPage.jsx';
 import OrderManagementPage from '../pages/admin/OrderManagementPage.jsx';
 import ProductManagementPage from '../pages/admin/ProductManagementPage.jsx';
 import UserManagementPage from '../pages/admin/UserManagementPage.jsx';
+import InventoryPage from '../pages/admin/InventoryPage.jsx';
+import CategoryManagementPage from '../pages/admin/CategoryManagementPage.jsx';
+import CouponManagementPage from '../pages/admin/CouponManagementPage.jsx';
 
 export default function AppRoutes() {
   return (
@@ -26,6 +30,7 @@ export default function AppRoutes() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
@@ -37,6 +42,9 @@ export default function AppRoutes() {
         <Route path="products" element={<ProductManagementPage />} />
         <Route path="orders" element={<OrderManagementPage />} />
         <Route path="users" element={<UserManagementPage />} />
+        <Route path="inventory" element={<InventoryPage />} />
+        <Route path="categories" element={<CategoryManagementPage />} />
+        <Route path="coupons" element={<CouponManagementPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

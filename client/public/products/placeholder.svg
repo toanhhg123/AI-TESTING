@@ -1,0 +1,11 @@
+<svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sản phẩm">
+  <defs>
+    <linearGradient id="phBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5f5f7"/>
+      <stop offset="1" stop-color="#d8d8dc"/>
+    </linearGradient>
+  </defs>
+  <rect x="168" y="70" width="144" height="300" rx="34" fill="url(#phBody)" stroke="#c7c7cc" stroke-width="2"/>
+  <rect x="180" y="86" width="120" height="268" rx="24" fill="#eef1f6"/>
+  <rect x="216" y="96" width="48" height="10" rx="5" fill="#c7c7cc"/>
+</svg>

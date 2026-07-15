@@ -67,6 +67,16 @@ const orderSchema = new mongoose.Schema(
       required: [true, 'Tên người nhận không được để trống.'],
       trim: true,
     },
+    couponCode: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    discountAmount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
   },
   {
     timestamps: true,

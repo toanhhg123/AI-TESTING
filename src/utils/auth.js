@@ -21,6 +21,8 @@ function sanitizeUser(user) {
     fullName: user.fullName,
     email: user.email,
     role: user.role,
+    phone: user.phone || '',
+    shippingAddress: user.shippingAddress || '',
   };
 }
 

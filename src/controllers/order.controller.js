@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 
 async function createOrder(req, res, next) {
   try {
-    const { shippingAddress, phoneNumber, receiverName, paymentMethod = 'cod' } = req.body;
+    const { shippingAddress, phoneNumber, receiverName, paymentMethod = 'cod', couponCode } = req.body;
 
     if (!shippingAddress || !phoneNumber || !receiverName) {
       return res.status(400).json({
@@ -53,15 +53,52 @@ async function createOrder(req, res, next) {
       });
     }
 
+    // Process coupon code
+    const baseSubtotal = totalAmount;
+    let discountAmount = 0;
+    let appliedCouponCode = '';
+
+    if (couponCode) {
+      const Coupon = require('../models/Coupon');
+      const coupon = await Coupon.findOne({ code: couponCode.toUpperCase().trim() });
+      if (!coupon) {
+        return res.status(400).json({ message: 'Mã giảm giá không tồn tại.' });
+      }
+      if (!coupon.isActive) {
+        return res.status(400).json({ message: 'Mã giảm giá đã bị vô hiệu hóa.' });
+      }
+      if (new Date(coupon.expiryDate) < new Date()) {
+        return res.status(400).json({ message: 'Mã giảm giá đã hết hạn.' });
+      }
+      if (baseSubtotal < coupon.minOrderAmount) {
+        return res.status(400).json({
+          message: `Mã giảm giá yêu cầu đơn hàng từ ${coupon.minOrderAmount.toLocaleString('vi-VN')}đ.`,
+        });
+      }
+
+      if (coupon.discountType === 'percentage') {
+        discountAmount = (baseSubtotal * coupon.discountValue) / 100;
+      } else if (coupon.discountType === 'fixed') {
+        discountAmount = coupon.discountValue;
+      }
+      discountAmount = Math.min(discountAmount, baseSubtotal);
+      appliedCouponCode = coupon.code;
+    }
+
+    const shippingFee = baseSubtotal > 15000000 ? 0 : 30000;
+    const finalTotalAmount = Math.max(0, baseSubtotal - discountAmount) + shippingFee;
+
     // Create the order
     const order = await Order.create({
       customer: req.user._id,
       items: orderItems,
-      totalAmount,
+      totalAmount: finalTotalAmount,
       paymentMethod,
       shippingAddress: shippingAddress.trim(),
       phoneNumber: phoneNumber.trim(),
       receiverName: receiverName.trim(),
+      couponCode: appliedCouponCode,
+      discountAmount,
     });
 
     // Deduct stock and increment soldCount

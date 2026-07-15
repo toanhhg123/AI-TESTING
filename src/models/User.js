@@ -24,6 +24,21 @@ const userSchema = new mongoose.Schema(
       enum: ['customer', 'admin'],
       default: 'customer',
     },
+    status: {
+      type: String,
+      enum: ['active', 'blocked'],
+      default: 'active',
+    },
+    phone: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    shippingAddress: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   {
     timestamps: true,

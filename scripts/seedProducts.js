@@ -4,6 +4,17 @@ const connectDatabase = require('../src/config/database');
 const Product = require('../src/models/Product');
 const { createSlug } = require('../src/utils/slug');
 
+// Ảnh sản phẩm dùng render nền trong suốt kiểu Apple, đặt trong client/public/products/.
+// Để thay bằng ảnh Apple thật: lưu ảnh (PNG nền trong suốt) vào client/public/products/
+// rồi đổi đường dẫn images bên dưới, ví dụ: '/products/iphone15.png'.
+// Hoặc dùng trang Admin > Sản phẩm để upload ảnh trực tiếp.
+const IMG = {
+  phone: '/products/phone.svg',
+  tablet: '/products/tablet.svg',
+  audio: '/products/audio.svg',
+  accessory: '/products/accessory.svg',
+};
+
 const demoProducts = [
   {
     name: 'iPhone 15 128GB',
@@ -13,9 +24,7 @@ const demoProducts = [
     price: 19990000,
     salePrice: 18990000,
     stock: 25,
-    images: [
-      'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.phone],
     specifications: {
       screen: '6.1 inch Super Retina XDR',
       chip: 'A16 Bionic',
@@ -35,9 +44,7 @@ const demoProducts = [
     price: 18490000,
     salePrice: 17490000,
     stock: 30,
-    images: [
-      'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.phone],
     specifications: {
       screen: '6.2 inch Dynamic AMOLED',
       ram: '8GB',
@@ -57,9 +64,7 @@ const demoProducts = [
     price: 14990000,
     salePrice: 13990000,
     stock: 18,
-    images: [
-      'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.phone],
     specifications: {
       screen: '6.67 inch AMOLED',
       ram: '12GB',
@@ -79,9 +84,7 @@ const demoProducts = [
     price: 10990000,
     salePrice: 9990000,
     stock: 15,
-    images: [
-      'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.tablet],
     specifications: {
       screen: '10.9 inch Liquid Retina',
       chip: 'A14 Bionic',
@@ -100,9 +103,7 @@ const demoProducts = [
     price: 9490000,
     salePrice: 8990000,
     stock: 20,
-    images: [
-      'https://images.unsplash.com/photo-1561154464-82e9adf32764?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.tablet],
     specifications: {
       screen: '10.9 inch',
       ram: '6GB',
@@ -121,9 +122,7 @@ const demoProducts = [
     price: 5990000,
     salePrice: 5290000,
     stock: 40,
-    images: [
-      'https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.audio],
     specifications: {
       connection: 'Bluetooth',
       charging: 'USB-C',
@@ -141,9 +140,7 @@ const demoProducts = [
     price: 490000,
     salePrice: 390000,
     stock: 120,
-    images: [
-      'https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.accessory],
     specifications: {
       power: '30W',
       port: 'USB-C',
@@ -161,9 +158,7 @@ const demoProducts = [
     price: 250000,
     salePrice: 190000,
     stock: 200,
-    images: [
-      'https://images.unsplash.com/photo-1601593346740-925612772716?auto=format&fit=crop&w=900&q=80',
-    ],
+    images: [IMG.accessory],
     specifications: {
       material: 'TPU',
       compatibility: 'iPhone 15',

@@ -2428,3 +2428,838 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   APPLE-STYLE STOREFRONT THEME
+   Scoped under .app-shell so the admin panel (.admin-shell) is untouched.
+   Reference: design.md — SF Pro type, single blue accent, full-bleed
+   alternating tiles, pill CTAs, parchment footer.
+   ========================================================================== */
+
+.app-shell {
+  /* Accent */
+  --ap-blue: #0066cc;
+  --ap-blue-focus: #0071e3;
+  --ap-blue-on-dark: #2997ff;
+  /* Surface */
+  --ap-canvas: #ffffff;
+  --ap-parchment: #f5f5f7;
+  --ap-pearl: #fafafc;
+  --ap-tile-dark: #1d1d1f;
+  --ap-black: #000000;
+  /* Ink */
+  --ap-ink: #1d1d1f;
+  --ap-ink-80: #333333;
+  --ap-ink-48: #6e6e73;
+  --ap-on-dark: #f5f5f7;
+  --ap-muted-dark: #a1a1a6;
+  /* Lines */
+  --ap-hairline: #d2d2d7;
+  --ap-divider: rgba(0, 0, 0, 0.08);
+  /* Radii */
+  --ap-r-sm: 8px;
+  --ap-r-md: 12px;
+  --ap-r-lg: 18px;
+  --ap-r-pill: 9999px;
+  /* Product shadow — the one and only shadow */
+  --ap-product-shadow: 0 22px 60px -20px rgba(0, 0, 0, 0.35);
+
+  /* Re-map legacy tokens (cart/checkout/order/auth) to the Apple palette */
+  --accent: #0066cc;
+  --accent-dark: #0055aa;
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --border: #d2d2d7;
+  --surface: #ffffff;
+  --soft: #f5f5f7;
+  --background: #f5f5f7;
+  --text: #1d1d1f;
+  --text-secondary: #424245;
+  --text-muted: #6e6e73;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px -10px rgba(0, 0, 0, 0.18);
+  --shadow-lg: 0 30px 60px -25px rgba(0, 0, 0, 0.3);
+
+  background: var(--ap-canvas);
+  color: var(--ap-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Inter", system-ui, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Base typography ---- */
+.app-shell h1,
+.app-shell h2,
+.app-shell h3 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ap-ink);
+}
+
+.app-shell p {
+  color: var(--ap-ink);
+}
+
+/* ---- Global nav (thin bar) ---- */
+.app-shell .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(22, 22, 23, 0.82);
+  border-bottom: 0;
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+.app-shell .header-inner {
+  min-height: 48px;
+  gap: 0;
+}
+
+.app-shell .brand {
+  gap: 8px;
+  color: #f5f5f7;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .brand svg {
+  color: #f5f5f7;
+}
+
+.app-shell .main-nav {
+  flex: 1;
+  justify-content: center;
+  gap: 34px;
+  color: #d2d2d7;
+  font-weight: 400;
+}
+
+.app-shell .main-nav a {
+  font-size: 0.8rem;
+  letter-spacing: -0.01em;
+  color: rgba(245, 245, 247, 0.85);
+  transition: color 0.2s ease;
+}
+
+.app-shell .main-nav a.active,
+.app-shell .main-nav a:hover {
+  color: #ffffff;
+}
+
+.app-shell .header-actions {
+  gap: 4px;
+}
+
+/* Nav icon buttons (search / bag / account) */
+.app-shell .nav-icon-btn {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #f5f5f7;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.app-shell .nav-icon-btn:hover {
+  color: #ffffff;
+}
+
+.app-shell .nav-bag-count {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 9999px;
+  background: var(--ap-blue-on-dark);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-shell .account-trigger {
+  min-height: 38px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 10px;
+  gap: 6px;
+  background: transparent;
+  color: #f5f5f7;
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.app-shell .account-trigger svg:last-child {
+  color: rgba(245, 245, 247, 0.7);
+}
+
+.app-shell .account-dropdown {
+  top: calc(100% + 8px);
+  border: 1px solid var(--ap-hairline);
+  border-radius: var(--ap-r-md);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+}
+
+.app-shell .account-dropdown a,
+.app-shell .account-dropdown button,
+.app-shell .mobile-nav a,
+.app-shell .mobile-nav button {
+  font-weight: 400;
+  color: var(--ap-ink-80);
+}
+
+.app-shell .account-dropdown a:hover,
+.app-shell .account-dropdown a.active,
+.app-shell .account-dropdown button:hover,
+.app-shell .mobile-nav a:hover,
+.app-shell .mobile-nav a.active,
+.app-shell .mobile-nav button:hover {
+  background: var(--ap-parchment);
+  color: var(--ap-blue);
+}
+
+.app-shell .icon-button {
+  border-radius: 8px;
+  border-color: var(--ap-hairline);
+}
+
+.app-shell .mobile-nav-panel {
+  background: rgba(22, 22, 23, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-shell .mobile-nav a,
+.app-shell .mobile-nav button {
+  color: #f5f5f7;
+}
+
+.app-shell .mobile-nav a:hover,
+.app-shell .mobile-nav button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.app-shell .mobile-nav-divider {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---- Buttons: blue pill grammar ---- */
+.app-shell .button {
+  min-height: 44px;
+  border-radius: var(--ap-r-pill);
+  padding: 0 22px;
+  font-weight: 400;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  transition: transform 0.12s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.app-shell .button:active {
+  transform: scale(0.96);
+}
+
+.app-shell .button.primary {
+  background: var(--ap-blue);
+  color: #fff;
+  border-color: transparent;
+}
+
+.app-shell .button.primary:hover {
+  background: #0077ed;
+}
+
+.app-shell .button.secondary {
+  background: transparent;
+  color: var(--ap-blue);
+  border: 1px solid var(--ap-blue);
+}
+
+.app-shell .button.secondary:hover {
+  background: var(--ap-blue);
+  color: #fff;
+}
+
+/* Ghost text link that looks like Apple "Learn more ›" */
+.app-shell .link-chevron {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--ap-blue);
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .link-chevron:hover {
+  text-decoration: underline;
+}
+
+.app-shell .text-link {
+  color: var(--ap-blue);
+  font-weight: 400;
+}
+
+.app-shell .eyebrow {
+  color: var(--ap-ink-48);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Full-bleed tile system ---- */
+.app-shell .tile {
+  padding: 80px 24px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.app-shell .tile--light {
+  background: var(--ap-canvas);
+  color: var(--ap-ink);
+}
+
+.app-shell .tile--parchment {
+  background: var(--ap-parchment);
+  color: var(--ap-ink);
+}
+
+.app-shell .tile--dark {
+  background: #000;
+  color: var(--ap-on-dark);
+}
+
+.app-shell .tile--dark h1,
+.app-shell .tile--dark h2,
+.app-shell .tile--dark h3 {
+  color: #f5f5f7;
+}
+
+.app-shell .tile-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-shell .tile-eyebrow {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ap-blue);
+}
+
+.app-shell .tile--dark .tile-eyebrow {
+  color: var(--ap-blue-on-dark);
+}
+
+.app-shell .tile-headline {
+  font-size: clamp(2.4rem, 5vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  margin: 4px 0 0;
+}
+
+.app-shell .tile-sub {
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+  line-height: 1.35;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--ap-ink-80);
+  margin: 6px 0 0;
+  max-width: 640px;
+}
+
+.app-shell .tile--dark .tile-sub {
+  color: var(--ap-muted-dark);
+}
+
+.app-shell .tile-price {
+  font-size: 1.05rem;
+  color: var(--ap-ink-48);
+  margin-top: 10px;
+}
+
+.app-shell .tile--dark .tile-price {
+  color: var(--ap-muted-dark);
+}
+
+.app-shell .tile-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.app-shell .tile-media {
+  margin-top: 44px;
+  max-width: 100%;
+}
+
+.app-shell .tile-media img {
+  width: auto;
+  margin: 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(var(--ap-product-shadow));
+}
+
+/* ---- Hero (biggest tile) ---- */
+.app-shell .hero {
+  min-height: auto;
+  display: block;
+  background: var(--ap-parchment);
+  color: var(--ap-ink);
+  padding: 80px 24px 0;
+  text-align: center;
+}
+
+.app-shell .hero-inner {
+  padding: 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.app-shell .hero-copy {
+  max-width: none;
+}
+
+.app-shell .hero .eyebrow {
+  color: var(--ap-blue);
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .hero h1 {
+  font-size: clamp(2.8rem, 6vw, 4.2rem);
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+
+.app-shell .hero p {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--ap-ink-80);
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  line-height: 1.35;
+}
+
+.app-shell .hero-actions {
+  justify-content: center;
+  margin-top: 26px;
+  gap: 28px;
+}
+
+
+
+.app-shell .hero-media img {
+  width: auto;
+  margin: 0 auto;
+  filter: drop-shadow(var(--ap-product-shadow));
+}
+
+/* ---- Section wrapper ---- */
+.app-shell .section {
+  padding: 72px 0;
+}
+
+.app-shell .section-heading {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 36px;
+}
+
+.app-shell .section-heading.inline {
+  text-align: left;
+  max-width: none;
+  align-items: baseline;
+}
+
+.app-shell .section-heading h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  letter-spacing: -0.02em;
+}
+
+.app-shell .section-heading .eyebrow {
+  color: var(--ap-blue);
+  text-transform: none;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+/* ---- Feature strip ---- */
+.app-shell .feature-grid {
+  gap: 20px;
+}
+
+.app-shell .feature-item {
+  background: var(--ap-parchment);
+  border: 0;
+  border-radius: var(--ap-r-lg);
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.app-shell .feature-item svg {
+  color: var(--ap-blue);
+}
+
+.app-shell .feature-item h3 {
+  font-size: 1.05rem;
+}
+
+.app-shell .feature-item p {
+  color: var(--ap-ink-48);
+}
+
+/* ---- Product cards: Apple store utility card ---- */
+.app-shell .product-grid {
+  gap: 20px;
+}
+
+.app-shell .product-card {
+  background: var(--ap-canvas);
+  border: 1px solid var(--ap-hairline);
+  border-radius: var(--ap-r-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-shell .product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.app-shell .product-media {
+  aspect-ratio: 1 / 1;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  border-bottom: 1px solid var(--ap-parchment);
+}
+
+.app-shell .product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.app-shell .product-body {
+  padding: 22px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.app-shell .product-brand {
+  color: var(--ap-ink-48);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.app-shell .product-body h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.app-shell .product-body h3 a {
+  color: var(--ap-ink);
+}
+
+.app-shell .product-spec {
+  color: var(--ap-ink-48);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  min-height: 2.5em;
+}
+
+.app-shell .product-footer {
+  margin-top: 14px;
+  align-items: flex-end;
+}
+
+.app-shell .product-footer strong {
+  color: var(--ap-ink) !important;
+  font-weight: 600;
+}
+
+.app-shell .card-add-btn {
+  min-height: 34px;
+  border: 0;
+  border-radius: var(--ap-r-pill);
+  padding: 0 16px;
+  background: var(--ap-blue);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.2s ease;
+}
+
+.app-shell .card-add-btn:hover:not(:disabled) {
+  background: #0077ed;
+}
+
+.app-shell .card-add-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.app-shell .card-add-btn:disabled {
+  background: var(--ap-hairline);
+  color: var(--ap-ink-48);
+  cursor: not-allowed;
+}
+
+/* ---- Page header ---- */
+.app-shell .page {
+  padding: 56px 0;
+}
+
+.app-shell .page-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 40px;
+}
+
+.app-shell .page-header h1,
+.app-shell .detail-content h1 {
+  font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+.app-shell .page-header p {
+  color: var(--ap-ink-48);
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+
+/* ---- Catalog / filters ---- */
+.app-shell .filter-panel {
+  background: var(--ap-parchment);
+  border: 0;
+  border-radius: var(--ap-r-lg);
+  padding: 24px;
+}
+
+.app-shell .panel-title {
+  color: var(--ap-ink);
+}
+
+.app-shell label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--ap-ink-80);
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell textarea {
+  border: 1px solid var(--ap-hairline);
+  border-radius: var(--ap-r-md);
+  background: #fff;
+  color: var(--ap-ink);
+}
+
+.app-shell input:focus,
+.app-shell select:focus,
+.app-shell textarea:focus {
+  outline: 2px solid var(--ap-blue-focus);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+/* ---- Product detail ---- */
+.app-shell .product-detail {
+  gap: 56px;
+  align-items: center;
+}
+
+.app-shell .detail-media {
+  background: var(--ap-parchment);
+  border-radius: 28px;
+  overflow: hidden;
+  padding: 48px;
+  display: grid;
+  place-items: center;
+}
+
+.app-shell .detail-media img {
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  filter: drop-shadow(var(--ap-product-shadow));
+}
+
+.app-shell .detail-content .eyebrow {
+  color: var(--ap-blue);
+  text-transform: none;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .detail-content p {
+  color: var(--ap-ink-80);
+}
+
+.app-shell .spec-table {
+  background: var(--ap-parchment);
+  border: 0;
+  border-radius: var(--ap-r-lg);
+}
+
+.app-shell .spec-table div {
+  border-bottom: 1px solid var(--ap-hairline);
+}
+
+.app-shell .spec-table div span {
+  color: var(--ap-ink-48) !important;
+}
+
+.app-shell .spec-table div strong {
+  color: var(--ap-ink);
+}
+
+/* ---- Auth forms ---- */
+.app-shell .auth-form {
+  background: var(--ap-canvas);
+  border: 1px solid var(--ap-hairline);
+  border-radius: var(--ap-r-lg);
+  padding: 32px;
+}
+
+.app-shell .form-message {
+  border-radius: var(--ap-r-md);
+}
+
+.app-shell .form-message.success {
+  background: var(--ap-parchment);
+  color: var(--ap-blue);
+}
+
+.app-shell .auth-switch a {
+  color: var(--ap-blue);
+  font-weight: 400;
+}
+
+/* ---- Pagination ---- */
+.app-shell .pagination-bar span {
+  color: var(--ap-ink-48);
+}
+
+/* ---- Empty state ---- */
+.app-shell .empty-state {
+  background: var(--ap-parchment);
+  border: 0;
+  border-radius: var(--ap-r-lg);
+  color: var(--ap-ink-48);
+}
+
+/* ---- Apple parchment footer ---- */
+.app-shell .site-footer {
+  margin-top: 0;
+  border-top: 1px solid var(--ap-hairline);
+  background: var(--ap-parchment);
+  color: var(--ap-ink-48);
+}
+
+.app-shell .footer-grid {
+  padding: 44px 0 24px;
+}
+
+.app-shell .footer-brand .brand,
+.app-shell .footer-brand .brand svg {
+  color: var(--ap-ink);
+}
+
+.app-shell .footer-brand p,
+.app-shell .footer-column a,
+.app-shell .footer-column p,
+.app-shell .footer-bottom {
+  color: var(--ap-ink-48);
+  font-size: 0.82rem;
+  line-height: 1.9;
+}
+
+.app-shell .footer-column h3 {
+  color: var(--ap-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.app-shell .footer-column a:hover {
+  color: var(--ap-blue);
+  text-decoration: underline;
+}
+
+.app-shell .contact-column svg {
+  color: var(--ap-ink-48);
+}
+
+.app-shell .footer-bottom {
+  border-top: 1px solid var(--ap-hairline);
+  font-size: 0.75rem;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 833px) {
+  .app-shell .main-nav {
+    display: none;
+  }
+
+  .app-shell .mobile-menu {
+    display: inline-flex;
+  }
+
+  .app-shell .desktop-actions {
+    display: none;
+  }
+
+  .app-shell .tile {
+    padding: 56px 20px;
+  }
+
+  .app-shell .catalog-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .product-detail {
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .hero {
+    padding-top: 56px;
+  }
+}

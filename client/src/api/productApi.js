@@ -15,3 +15,11 @@ export function searchProducts(params) {
 export function getRecommendations(params) {
   return axiosClient.get('/products/recommendations', { params });
 }
+
+export function createProductReview(id, payload) {
+  return axiosClient.post(`/products/${id}/reviews`, payload);
+}
+
+export function getCategories() {
+  return axiosClient.get('/products/categories');
+}

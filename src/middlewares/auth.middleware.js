@@ -23,6 +23,12 @@ async function authenticate(req, res, next) {
       });
     }
 
+    if (user.status === 'blocked') {
+      return res.status(403).json({
+        message: 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.',
+      });
+    }
+
     req.user = user;
     next();
   } catch (error) {

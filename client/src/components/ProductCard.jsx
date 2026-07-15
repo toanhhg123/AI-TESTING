@@ -19,7 +19,7 @@ function formatCurrency(value) {
 
 export default function ProductCard({ product }) {
   const productId = product._id || product.id;
-  const productImage = product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80';
+  const productImage = product.images?.[0] || product.image || '/products/placeholder.svg';
   const [isAdding, setIsAdding] = useState(false);
 
   const { showToast, showConfirm } = useNotification();
@@ -73,7 +73,14 @@ export default function ProductCard({ product }) {
   return (
     <article className="product-card">
       <Link className="product-media" to={`/products/${productId}`} aria-label={product.name}>
-        <img src={productImage} alt={product.name} />
+        <img
+          src={productImage}
+          alt={product.name}
+          loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = '/products/placeholder.svg';
+          }}
+        />
       </Link>
 
       <div className="product-body">
@@ -94,17 +101,14 @@ export default function ProductCard({ product }) {
             )}
           </div>
           <button
-            className="icon-button dark"
+            className="card-add-btn"
             type="button"
             aria-label="Thêm vào giỏ hàng"
             onClick={handleAddCartClick}
             disabled={isAdding || product.stock <= 0}
-            style={{
-              opacity: product.stock <= 0 ? 0.5 : 1,
-              cursor: product.stock <= 0 ? 'not-allowed' : 'pointer',
-            }}
           >
-            <ShoppingCart size={18} />
+            <ShoppingCart size={15} />
+            <span>{product.stock <= 0 ? 'Hết hàng' : 'Thêm'}</span>
           </button>
         </div>
       </div>

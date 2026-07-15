@@ -1,0 +1,15 @@
+<svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Máy tính bảng">
+  <defs>
+    <linearGradient id="tBody" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5f5f7"/>
+      <stop offset="1" stop-color="#d8d8dc"/>
+    </linearGradient>
+    <linearGradient id="tScreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef1f6"/>
+      <stop offset="1" stop-color="#dfe4ec"/>
+    </linearGradient>
+  </defs>
+  <rect x="120" y="80" width="240" height="320" rx="26" fill="url(#tBody)" stroke="#c7c7cc" stroke-width="2"/>
+  <rect x="136" y="98" width="208" height="284" rx="14" fill="url(#tScreen)"/>
+  <circle cx="240" cy="90" r="0" fill="#c7c7cc"/>
+</svg>

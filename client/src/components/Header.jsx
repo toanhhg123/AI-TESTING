@@ -1,4 +1,4 @@
-import { ChevronDown, LogOut, Search, Smartphone, User, UserPlus, X, Menu } from 'lucide-react';
+import { ChevronDown, LogOut, Search, ShoppingBag, Smartphone, User, UserPlus, X, Menu } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -7,12 +7,11 @@ import { clearAuthSession, getStoredUser, onAuthChanged } from '../utils/authSto
 const mainLinks = [
   { to: '/', label: 'Trang chủ', end: true },
   { to: '/products', label: 'Sản phẩm' },
-  { to: '/cart', label: 'Giỏ hàng' },
   { to: '/orders', label: 'Đơn hàng' },
 ];
 
 const dropdownLinks = [
-  { to: '/products', label: 'Tìm kiếm sản phẩm', icon: Search },
+  { to: '/products?focus=search', label: 'Tìm kiếm sản phẩm', icon: Search },
 ];
 
 const guestLinks = [
@@ -41,13 +40,18 @@ export default function Header() {
     closeMenus();
   }
 
-  const accountLinks = currentUser ? dropdownLinks : [...dropdownLinks, ...guestLinks];
+  const accountLinks = currentUser
+    ? [
+        { to: '/profile', label: 'Trang cá nhân', icon: User },
+        ...dropdownLinks,
+      ]
+    : [...dropdownLinks, ...guestLinks];
 
   return (
     <header className="site-header">
       <div className="container header-inner">
         <NavLink className="brand" to="/">
-          <Smartphone size={24} />
+          <Smartphone size={20} />
           <span>Mobile Store</span>
         </NavLink>
 
@@ -60,6 +64,14 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
+          <NavLink className="nav-icon-btn desktop-actions" to="/products?focus=search" aria-label="Tìm kiếm">
+            <Search size={17} />
+          </NavLink>
+
+          <NavLink className="nav-icon-btn" to="/cart" aria-label="Giỏ hàng">
+            <ShoppingBag size={17} />
+          </NavLink>
+
           <div className="account-menu desktop-actions">
             <button
               className="account-trigger"
@@ -68,9 +80,9 @@ export default function Header() {
               aria-haspopup="menu"
               onClick={() => setIsAccountOpen((current) => !current)}
             >
-              <User size={18} />
-              <span>{currentUser?.fullName || 'Tài khoản'}</span>
-              <ChevronDown size={16} />
+              <User size={17} />
+              <span>{currentUser?.fullName?.split(' ').slice(-1)[0] || 'Tài khoản'}</span>
+              <ChevronDown size={14} />
             </button>
 
             {isAccountOpen ? (
@@ -97,7 +109,7 @@ export default function Header() {
           </div>
 
           <button
-            className="icon-button mobile-menu"
+            className="nav-icon-btn mobile-menu"
             type="button"
             aria-label={isMobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
             aria-expanded={isMobileMenuOpen}
