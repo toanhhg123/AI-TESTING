@@ -17,3 +17,7 @@ export function lookupOrder(orderId) {
     params: { orderId },
   });
 }
+
+export function verifyStripePayment(id, sessionId) {
+  return axiosClient.post(`/orders/${id}/verify-stripe`, { sessionId });
+}

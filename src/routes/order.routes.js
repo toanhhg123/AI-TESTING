@@ -10,5 +10,6 @@ router.get('/lookup', orderController.searchOrder);
 router.get('/', authenticate, orderController.listCustomerOrders);
 router.post('/', authenticate, orderController.createOrder);
 router.get('/:id', authenticate, orderController.getOrderDetail);
+router.post('/:id/verify-stripe', authenticate, orderController.verifyStripePayment);
 
 module.exports = router;

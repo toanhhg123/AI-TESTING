@@ -12,6 +12,8 @@ import ProductListPage from '../pages/ProductListPage.jsx';
 import RegisterPage from '../pages/RegisterPage.jsx';
 import ProfilePage from '../pages/ProfilePage.jsx';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage.jsx';
+import CheckoutSuccessPage from '../pages/CheckoutSuccessPage.jsx';
+import CheckoutCancelPage from '../pages/CheckoutCancelPage.jsx';
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.jsx';
 import AdminLoginPage from '../pages/admin/AdminLoginPage.jsx';
 import OrderManagementPage from '../pages/admin/OrderManagementPage.jsx';
@@ -35,6 +37,8 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/checkout-success" element={<CheckoutSuccessPage />} />
+        <Route path="/checkout-cancel" element={<CheckoutCancelPage />} />
       </Route>
 
       <Route path="/admin/login" element={<AdminLoginPage />} />

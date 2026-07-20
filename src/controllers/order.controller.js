@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const env = require('../config/env');
+const stripe = env.stripeSecretKey ? require('stripe')(env.stripeSecretKey) : null;
 
 async function createOrder(req, res, next) {
   try {
@@ -114,6 +116,52 @@ async function createOrder(req, res, next) {
     // Clear cart
     cart.items = [];
     await cart.save();
+
+    // If Stripe payment method, create checkout session
+    if (paymentMethod === 'stripe') {
+      let checkoutUrl = '';
+
+      if (stripe) {
+        // Create actual Stripe Checkout Session
+        const lineItems = [
+          {
+            price_data: {
+              currency: 'vnd',
+              product_data: {
+                name: `Đơn hàng #${order._id.toString().substring(order._id.toString().length - 8).toUpperCase()}`,
+                description: 'Thanh toán đơn hàng thiết bị di động tại Mobile Store',
+              },
+              unit_amount: finalTotalAmount,
+            },
+            quantity: 1,
+          },
+        ];
+
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: lineItems,
+          mode: 'payment',
+          success_url: `${env.corsOrigin}/checkout-success?session_id={CHECKOUT_SESSION_ID}&order_id=${order._id}`,
+          cancel_url: `${env.corsOrigin}/checkout-cancel?order_id=${order._id}`,
+          metadata: {
+            orderId: order._id.toString(),
+          },
+        });
+
+        checkoutUrl = session.url;
+        order.stripeSessionId = session.id;
+        await order.save();
+      } else {
+        // Mock Mode: redirect to success directly
+        checkoutUrl = `${env.corsOrigin}/checkout-success?session_id=mock_session_id_${order._id}&order_id=${order._id}`;
+      }
+
+      return res.status(201).json({
+        message: 'Đơn hàng được khởi tạo. Đang chuyển hướng sang cổng thanh toán...',
+        order,
+        checkoutUrl,
+      });
+    }
 
     res.status(201).json({
       message: 'Đặt hàng thành công.',
@@ -280,6 +328,64 @@ async function updateOrderStatus(req, res, next) {
   }
 }
 
+async function verifyStripePayment(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { sessionId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Mã đơn hàng không hợp lệ.' });
+    }
+
+    if (!sessionId) {
+      return res.status(400).json({ message: 'Vui lòng cung cấp mã phiên Stripe.' });
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng.' });
+    }
+
+    // Mock Mode
+    if (sessionId.startsWith('mock_session_id_')) {
+      order.paymentStatus = 'paid';
+      order.status = 'confirmed'; // confirm order automatically upon receipt of payment
+      await order.save();
+      return res.json({
+        message: 'Thanh toán (giả lập) thành công!',
+        order,
+      });
+    }
+
+    if (!stripe) {
+      return res.status(400).json({ message: 'Cổng thanh toán Stripe chưa được cấu hình.' });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (session.payment_status === 'paid') {
+      order.paymentStatus = 'paid';
+      order.status = 'confirmed';
+      order.stripeSessionId = sessionId;
+      await order.save();
+
+      return res.json({
+        message: 'Thanh toán trực tuyến qua Stripe thành công!',
+        order,
+      });
+    } else {
+      order.paymentStatus = 'failed';
+      await order.save();
+      return res.status(400).json({
+        message: 'Thanh toán chưa hoàn tất hoặc thất bại.',
+        paymentStatus: session.payment_status,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createOrder,
   listCustomerOrders,
@@ -287,4 +393,5 @@ module.exports = {
   searchOrder,
   listAllOrders,
   updateOrderStatus,
+  verifyStripePayment,
 };

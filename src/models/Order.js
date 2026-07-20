@@ -49,8 +49,17 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: true,
-      enum: ['cod', 'momo', 'visa', 'bank_transfer'],
+      enum: ['cod', 'momo', 'visa', 'bank_transfer', 'stripe'],
       default: 'cod',
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending',
+    },
+    stripeSessionId: {
+      type: String,
+      default: '',
     },
     shippingAddress: {
       type: String,

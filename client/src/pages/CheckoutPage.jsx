@@ -122,6 +122,12 @@ export default function CheckoutPage() {
         paymentMethod,
         couponCode: appliedCoupon || undefined,
       });
+
+      if (response.data.checkoutUrl) {
+        window.location.href = response.data.checkoutUrl;
+        return;
+      }
+
       setCreatedOrder(response.data.order);
     } catch (err) {
       console.error('Lỗi khi thanh toán:', err);
@@ -358,6 +364,24 @@ export default function CheckoutPage() {
                   <span className="payment-method-title">Chuyển khoản</span>
                 </div>
                 <p className="payment-method-desc">Chuyển khoản trực tiếp qua ngân hàng hoặc ví điện tử.</p>
+              </div>
+
+              <div
+                className={`payment-method-card ${paymentMethod === 'stripe' ? 'selected' : ''}`}
+                onClick={() => setPaymentMethod('stripe')}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="stripe"
+                    checked={paymentMethod === 'stripe'}
+                    onChange={() => setPaymentMethod('stripe')}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <span className="payment-method-title">Thanh toán Stripe</span>
+                </div>
+                <p className="payment-method-desc">Thanh toán trực tuyến bằng thẻ Visa/Mastercard Quốc tế.</p>
               </div>
             </div>
           </div>
