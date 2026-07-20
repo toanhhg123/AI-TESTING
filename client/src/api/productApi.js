@@ -23,3 +23,7 @@ export function createProductReview(id, payload) {
 export function getCategories() {
   return axiosClient.get('/products/categories');
 }
+
+export function getSimilarProducts(id) {
+  return axiosClient.get(`/products/${id}/similar`);
+}

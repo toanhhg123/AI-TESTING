@@ -2,7 +2,7 @@ import { ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 
-import { getProductById, getRecommendations, createProductReview } from '../api/productApi';
+import { getProductById, getRecommendations, createProductReview, getSimilarProducts } from '../api/productApi';
 import { addCartItem } from '../api/cartApi';
 import { getStoredUser } from '../utils/authStorage';
 import ProductCard from '../components/ProductCard.jsx';
@@ -43,6 +43,7 @@ export default function ProductDetailPage() {
       try {
         const response = await getProductById(id);
         setProduct(response.data.product || null);
+        window.scrollTo(0, 0); // Scroll to top on load
       } catch (error) {
         console.error('Lỗi khi tải chi tiết sản phẩm:', error);
         setErrorMessage(error.response?.data?.message || 'Không thể tải chi tiết sản phẩm này.');
@@ -59,10 +60,10 @@ export default function ProductDetailPage() {
     async function loadRelatedProducts() {
       setIsRelatedLoading(true);
       try {
-        const response = await getRecommendations({ productId: id, limit: 3 });
+        const response = await getSimilarProducts(id);
         setRelatedProducts(response.data.items || []);
       } catch (error) {
-        console.error('Lỗi khi tải sản phẩm liên quan:', error);
+        console.error('Lỗi khi tải sản phẩm tương tự:', error);
       } finally {
         setIsRelatedLoading(false);
       }
@@ -316,15 +317,15 @@ export default function ProductDetailPage() {
         </div>
       </section>
 
-      {/* Related Products Section */}
+      {/* Similar Products Section */}
       <section className="section" style={{ borderTop: '1px solid var(--border)', marginTop: '64px', paddingTop: '48px' }}>
         <div className="section-heading">
-          <p className="eyebrow">Gợi ý dành cho bạn</p>
-          <h2>Sản phẩm liên quan</h2>
+          <p className="eyebrow">AI Recommendation</p>
+          <h2>Sản phẩm tương tự</h2>
         </div>
         
         {isRelatedLoading ? (
-          <div style={{ color: 'var(--muted)', padding: '20px 0' }}>Đang tải sản phẩm liên quan...</div>
+          <div style={{ color: 'var(--muted)', padding: '20px 0' }}>Đang tìm kiếm sản phẩm tương tự bằng AI...</div>
         ) : (
           <div className="product-grid">
             {relatedProducts.map((item) => (
@@ -333,7 +334,7 @@ export default function ProductDetailPage() {
 
             {!isRelatedLoading && relatedProducts.length === 0 && (
               <div style={{ color: 'var(--muted)', gridColumn: 'span 3', padding: '20px 0' }}>
-                Không có sản phẩm liên quan nào phù hợp.
+                Không tìm thấy sản phẩm tương tự nào có tên tương đồng trong hệ thống.
               </div>
             )}
           </div>

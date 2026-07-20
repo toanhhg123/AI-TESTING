@@ -77,6 +77,9 @@ export default function LoginPage() {
         <p className="auth-switch">
           Chưa có tài khoản? <Link to="/register">Đăng ký</Link>
         </p>
+        <p className="auth-switch" style={{ marginTop: '10px' }}>
+          Quên mật khẩu? <Link to="/forgot-password">Đặt lại mật khẩu</Link>
+        </p>
       </form>
     </div>
   );

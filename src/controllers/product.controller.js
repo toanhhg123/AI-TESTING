@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const natural = require('natural');
 
 const Product = require('../models/Product');
 const { createSlug } = require('../utils/slug');
@@ -502,6 +503,129 @@ async function deleteProduct(req, res, next) {
   }
 }
 
+async function getSimilarProducts(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID sản phẩm không hợp lệ.' });
+    }
+
+    const currentProduct = await Product.findById(id);
+    if (!currentProduct) {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm.' });
+    }
+
+    // Fetch all active products
+    const products = await Product.find({ status: 'active', _id: { $ne: currentProduct._id } });
+
+    if (products.length === 0) {
+      return res.json({ items: [] });
+    }
+
+    const tokenizer = new natural.WordTokenizer();
+
+    // Prepare target product doc tokens
+    const targetText = `${currentProduct.name} ${currentProduct.brand} ${currentProduct.category} ${currentProduct.description || ''}`.toLowerCase();
+    const targetTokens = tokenizer.tokenize(targetText);
+
+    // Prepare other products docs tokens
+    const productDocs = products.map(p => {
+      const text = `${p.name} ${p.brand} ${p.category} ${p.description || ''}`.toLowerCase();
+      return tokenizer.tokenize(text);
+    });
+
+    // Prepare term frequencies
+    const getTf = (tokens) => {
+      const tf = {};
+      tokens.forEach(t => {
+        tf[t] = (tf[t] || 0) + 1;
+      });
+      return tf;
+    };
+
+    // Vocabulary of target + all candidates
+    const vocabSet = new Set([...targetTokens]);
+    productDocs.forEach(tokens => {
+      tokens.forEach(t => vocabSet.add(t));
+    });
+    const vocab = Array.from(vocabSet);
+
+    // Document Frequency (DF)
+    const df = {};
+    vocab.forEach(t => {
+      let count = 0;
+      if (targetTokens.includes(t)) count++;
+      productDocs.forEach(tokens => {
+        if (tokens.includes(t)) count++;
+      });
+      df[t] = count;
+    });
+
+    const N = products.length + 1;
+
+    // Inverse Document Frequency (IDF)
+    const idf = {};
+    vocab.forEach(t => {
+      idf[t] = Math.log(N / (df[t] || 1)) + 1;
+    });
+
+    // Helper to compute TF-IDF vector
+    const getTfidfVector = (tokens) => {
+      const tf = getTf(tokens);
+      const vec = {};
+      vocab.forEach(t => {
+        vec[t] = (tf[t] || 0) * idf[t];
+      });
+      return vec;
+    };
+
+    const targetVector = getTfidfVector(targetTokens);
+    
+    // Compute magnitudes
+    const getMagnitude = (vec) => {
+      let sumSq = 0;
+      vocab.forEach(t => {
+        sumSq += Math.pow(vec[t] || 0, 2);
+      });
+      return Math.sqrt(sumSq);
+    };
+
+    const targetMag = getMagnitude(targetVector);
+
+    const scoredProducts = products.map((p, idx) => {
+      const tokens = productDocs[idx];
+      const vector = getTfidfVector(tokens);
+      const mag = getMagnitude(vector);
+
+      // Dot product
+      let dotProduct = 0;
+      vocab.forEach(t => {
+        dotProduct += (targetVector[t] || 0) * (vector[t] || 0);
+      });
+
+      const similarity = (targetMag === 0 || mag === 0) ? 0 : dotProduct / (targetMag * mag);
+
+      return {
+        product: p,
+        similarity,
+      };
+    });
+
+    // Sort by similarity score descending
+    scoredProducts.sort((a, b) => b.similarity - a.similarity);
+
+    // Limit to top 4 products
+    const topProducts = scoredProducts.slice(0, 4).map(item => item.product);
+
+    res.json({
+      items: topProducts,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createProduct,
   deleteProduct,
@@ -512,4 +636,5 @@ module.exports = {
   listPublicProducts,
   searchProducts,
   updateProduct,
+  getSimilarProducts,
 };

@@ -10,6 +10,7 @@ router.get('/search', productController.searchProducts);
 router.get('/recommendations', productController.getRecommendations);
 router.get('/categories', categoryController.listCategories);
 router.get('/:id', productController.getProductDetail);
+router.get('/:id/similar', productController.getSimilarProducts);
 router.post('/:id/reviews', authenticate, reviewController.createReview);
 
 module.exports = router;

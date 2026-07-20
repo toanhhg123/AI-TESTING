@@ -19,3 +19,11 @@ export function updateProfile(payload) {
 export function changePassword(payload) {
   return axiosClient.patch('/auth/change-password', payload);
 }
+
+export function forgotPassword(email) {
+  return axiosClient.post('/auth/forgot-password', { email });
+}
+
+export function resetPassword(payload) {
+  return axiosClient.post('/auth/reset-password', payload);
+}
